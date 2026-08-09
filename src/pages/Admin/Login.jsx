@@ -527,7 +527,17 @@ const Login = () => {
           <div className="inline-block px-3 py-1 border border-[#C8A253]/20 rounded-full mb-4 bg-[#C8A253]/5">
             <p className="text-[#C8A253] text-[9px] font-black tracking-[0.4em] uppercase">Secure Access</p>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-serif italic text-gray-900 mb-1.5">Truee <span className="text-[#C8A253]">Luxury</span></h1>
+           <div className="flex items-center justify-center gap-3 mb-2">
+            {/* ⚡ LOGO FIX: brightness-0 class se logo ekdum solid black ho jayega aur text se match karega */}
+            <img 
+              src="/Truee_Luxury_Logo.png" 
+              alt="Truee Luxury Logo" 
+              className="w-10 h-10 sm:w-12 sm:h-12 object-contain brightness-0 drop-shadow-sm" 
+            />
+            <h1 className="text-4xl sm:text-5xl font-serif text-gray-900 tracking-tight">
+              Truee <span className="text-[#C8A253] italic">Luxury</span>
+            </h1>
+          </div>
           <p className="text-gray-500 text-xs sm:text-sm font-medium tracking-wide">Sign in to manage your collection</p>
         </div>
 
