@@ -1,230 +1,14 @@
-// // import { useState } from 'react';
-// // import {
-// //   Heart, Eye, Star, ShoppingCart, Zap, GitCompare, Shield,
-// // } from 'lucide-react';
-// // import { useNavigate } from 'react-router-dom';
-// // import axiosInstance from '../../utils/axiosInstance';
-// // import { useAuth } from '../../context/AuthContext';
-// // import {
-// //   getProductImg,
-// //   getProductPricing,
-// //   isOutOfStock,
-// //   formatPrice,
-// //   getRating,
-// // } from '../../utils/productHelpers';
 
-// // const COMPARE_KEY = 'truee_compare';
-
-// // export default function ProductCardPremium({
-// //   product,
-// //   onQuickView,
-// //   variant = 'default',
-// //   className = '',
-// // }) {
-// //   const { user } = useAuth();
-// //   const navigate = useNavigate();
-// //   const [isWishlisted, setIsWishlisted] = useState(false);
-// //   const [imgHover, setImgHover] = useState(false);
-// //   const [adding, setAdding] = useState(false);
-
-// //   if (!product) return null;
-
-// //   const { mrp, sellingPrice, hasDiscount, discountPercent } = getProductPricing(product);
-// //   const outOfStock = isOutOfStock(product);
-// //   const { avg, count } = getRating(product);
-// //   const primaryImg = getProductImg(product, 0);
-// //   const hoverImg = getProductImg(product, 1) !== primaryImg ? getProductImg(product, 1) : primaryImg;
-// //   const brand = product.brand || product.category || 'TRUEE';
-// //   const highlight = product.shortDescription || product.tags?.[0] || 'Premium quality';
-
-// //   const isCompact = variant === 'compact';
-
-// //   const handleWishlist = async (e) => {
-// //     e.stopPropagation();
-// //     if (!user) return navigate('/login');
-// //     setIsWishlisted(!isWishlisted);
-// //     try {
-// //       await axiosInstance.post('/wishlist/toggle', { productId: product._id });
-// //     } catch {
-// //       setIsWishlisted(!isWishlisted);
-// //     }
-// //   };
-
-// //   const handleCompare = (e) => {
-// //     e.stopPropagation();
-// //     const list = JSON.parse(localStorage.getItem(COMPARE_KEY) || '[]');
-// //     if (list.includes(product._id)) {
-// //       localStorage.setItem(COMPARE_KEY, JSON.stringify(list.filter((id) => id !== product._id)));
-// //     } else if (list.length < 4) {
-// //       localStorage.setItem(COMPARE_KEY, JSON.stringify([...list, product._id]));
-// //     }
-// //   };
-
-// //   const addToCart = async (e, buyNow = false) => {
-// //     e.stopPropagation();
-// //     if (outOfStock) return;
-// //     setAdding(true);
-// //     try {
-// //       const { data } = await axiosInstance.post('/cart/add', {
-// //         productId: product._id,
-// //         quantity: 1,
-// //       });
-// //       if (data.success) {
-// //         window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { increase: 1 } }));
-// //         if (buyNow) navigate('/checkout');
-// //       }
-// //     } catch (err) {
-// //       console.error(err);
-// //     } finally {
-// //       setAdding(false);
-// //     }
-// //   };
-
-// //   return (
-// //     <article
-// //       className={`group relative flex flex-col bg-white rounded-2xl border border-gray-100 overflow-hidden
-// //         hover:border-[#C8A253]/25 hover:shadow-[var(--truee-shadow-lg)] transition-all duration-300
-// //         ${isCompact ? 'text-left' : ''} ${className}`}
-// //       onMouseEnter={() => setImgHover(true)}
-// //       onMouseLeave={() => setImgHover(false)}
-// //     >
-// //       {/* Image */}
-// //       <div
-// //         className={`relative bg-gradient-to-b from-[#FAFAFA] to-white overflow-hidden cursor-pointer
-// //           ${isCompact ? 'aspect-square' : 'aspect-[4/5]'}`}
-// //         onClick={() => onQuickView?.(product)}
-// //       >
-// //         {/* Badges */}
-// //         <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5">
-// //           {outOfStock ? (
-// //             <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide bg-gray-900 text-white rounded-full">
-// //               Sold Out
-// //             </span>
-// //           ) : hasDiscount ? (
-// //             <span className="px-2.5 py-1 text-[10px] font-bold bg-[#C8A253] text-black rounded-full shadow-sm">
-// //               -{discountPercent}%
-// //             </span>
-// //           ) : null}
-// //           {!outOfStock && (
-// //             <span className="px-2 py-0.5 text-[9px] font-semibold bg-white/90 text-gray-600 rounded-full border border-gray-100 flex items-center gap-1 w-fit">
-// //               <Shield size={10} className="text-[#C8A253]" /> Warranty
-// //             </span>
-// //           )}
-// //         </div>
-
-// //         {/* Action icons */}
-// //         <div className="absolute top-3 right-3 z-20 flex flex-col gap-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300">
-// //           <button
-// //             type="button"
-// //             onClick={handleWishlist}
-// //             className="p-2 rounded-full bg-white/95 shadow-md hover:bg-white hover:scale-105 transition-all"
-// //             aria-label="Wishlist"
-// //           >
-// //             <Heart
-// //               size={15}
-// //               className={isWishlisted ? 'text-red-500 fill-red-500' : 'text-gray-700'}
-// //               strokeWidth={2}
-// //             />
-// //           </button>
-         
-// //           {/* <button
-// //             type="button"
-// //             onClick={handleCompare}
-// //             className="p-2 rounded-full bg-white/95 shadow-md hover:bg-white hover:scale-105 transition-all hidden sm:flex"
-// //             aria-label="Compare"
-// //           >
-// //             <GitCompare size={15} className="text-gray-700" strokeWidth={2} />
-// //           </button> */}
-// //         </div>
-
-// //         <img
-// //           src={imgHover ? hoverImg : primaryImg}
-// //           alt={product.name}
-// //           loading="lazy"
-// //           className={`absolute inset-0 w-full h-full object-contain p-6 mix-blend-multiply transition-all duration-500
-// //             ${outOfStock ? 'opacity-50 grayscale' : 'group-hover:scale-105'}`}
-// //         />
-
-// //         {/* Hover CTA overlay */}
-// //         {!outOfStock && (
-// //           <div className="absolute inset-x-0 bottom-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-white via-white/95 to-transparent pt-8">
-// //             <div className="flex gap-2">
-// //               <button
-// //                 type="button"
-// //                 disabled={adding}
-// //                 onClick={(e) => addToCart(e, false)}
-// //                 className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-[#0A0A0A] text-white text-[10px] font-bold uppercase tracking-wider rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-60"
-// //               >
-// //                 <ShoppingCart size={13} /> Add
-// //               </button>
-// //               <button
-// //                 type="button"
-// //                 disabled={adding}
-// //                 onClick={(e) => addToCart(e, true)}
-// //                 className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-[#C8A253] text-black text-[10px] font-bold uppercase tracking-wider rounded-xl hover:bg-[#d4b06a] transition-colors disabled:opacity-60"
-// //               >
-// //                 <Zap size={13} /> Buy
-// //               </button>
-// //             </div>
-// //           </div>
-// //         )}
-// //       </div>
-
-// //       {/* Content */}
-// //       <div className="p-4 flex flex-col flex-1" onClick={() => onQuickView?.(product)}>
-// //         <p className="text-[10px] font-semibold uppercase tracking-widest text-[#C8A253] mb-1 truncate">
-// //           {brand}
-// //         </p>
-
-// //         <h3 className="text-sm font-medium text-gray-900 line-clamp-2 leading-snug mb-2 group-hover:text-[#8B6914] transition-colors cursor-pointer min-h-[2.5rem]">
-// //           {product.name}
-// //         </h3>
-
-// //         {/* Rating */}
-// //         <div className="flex items-center gap-1.5 mb-2">
-// //           <div className="flex items-center gap-0.5">
-// //             {[1, 2, 3, 4, 5].map((s) => (
-// //               <Star
-// //                 key={s}
-// //                 size={11}
-// //                 className={s <= Math.round(avg) ? 'text-amber-400 fill-amber-400' : 'text-gray-200 fill-gray-200'}
-// //               />
-// //             ))}
-// //           </div>
-// //           <span className="text-[10px] text-gray-400">
-// //             {avg.toFixed(1)}{count > 0 ? ` (${count})` : ''}
-// //           </span>
-// //         </div>
-
-// //         <p className="text-[11px] text-gray-500 line-clamp-1 mb-2">{highlight}</p>
-
-// //         {/* Price */}
-// //         <div className="flex items-baseline gap-2 mt-auto">
-// //           <span className="text-base font-bold text-gray-900">{formatPrice(sellingPrice)}</span>
-// //           {hasDiscount && (
-// //             <span className="text-xs text-gray-400 line-through">{formatPrice(mrp)}</span>
-// //           )}
-// //         </div>
-
-// //         {/* Meta row */}
-// //         <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-50">
-// //           {/* <span className={`text-[10px] font-medium ${outOfStock ? 'text-red-500' : 'text-green-600'}`}>
-// //             {outOfStock ? 'Out of stock' : 'In stock'}
-// //           </span> */}
-// //           {!outOfStock && (
-// //             <span className="text-[10px] text-gray-400">Delivers in 3–5 days</span>
-// //           )}
-// //         </div>
-// //       </div>
-// //     </article>
-// //   );
-// // }
 
 // import { useState } from 'react';
 // import {
-//   Heart, Star, ShoppingCart, Zap, Shield, Clock, Truck,
+//   Heart,
+//   Star,
+//   ShoppingCart,
+//   Zap,
+//   Shield,
 // } from 'lucide-react';
-// import { useNavigate } from 'react-router-dom';
+// import { Link, useNavigate } from 'react-router-dom';
 // import axiosInstance from '../../utils/axiosInstance';
 // import { useAuth } from '../../context/AuthContext';
 // import {
@@ -235,275 +19,232 @@
 //   getRating,
 // } from '../../utils/productHelpers';
 
-// const COMPARE_KEY = 'truee_compare';
-
-// export default function ProductCardPremium({
-//   product,
-//   onQuickView,
-//   variant = 'default',
-//   className = '',
-// }) {
-//   const { user } = useAuth();
-//   const navigate = useNavigate();
-//   const [isWishlisted, setIsWishlisted] = useState(false);
-//   const [imgHover, setImgHover] = useState(false);
-//   const [adding, setAdding] = useState(false);
-
-//   if (!product) return null;
-
-//   const { mrp, sellingPrice, hasDiscount, discountPercent } = getProductPricing(product);
-//   const outOfStock = isOutOfStock(product);
-//   const { avg, count } = getRating(product);
-//   const primaryImg = getProductImg(product, 0);
-//   const hoverImg = getProductImg(product, 1) !== primaryImg ? getProductImg(product, 1) : primaryImg;
-//   const brand = product.brand || product.category || 'TRUEE';
-//   const highlight = product.shortDescription || product.tags?.[0] || 'Premium quality';
-
-//   const isCompact = variant === 'compact';
-
-//   const handleWishlist = async (e) => {
-//     e.stopPropagation();
-//     if (!user) return navigate('/login');
-//     setIsWishlisted(!isWishlisted);
-//     try {
-//       await axiosInstance.post('/wishlist/toggle', { productId: product._id });
-//     } catch {
-//       setIsWishlisted(!isWishlisted);
-//     }
-//   };
-
-//   const handleCompare = (e) => {
-//     e.stopPropagation();
-//     const list = JSON.parse(localStorage.getItem(COMPARE_KEY) || '[]');
-//     if (list.includes(product._id)) {
-//       localStorage.setItem(COMPARE_KEY, JSON.stringify(list.filter((id) => id !== product._id)));
-//     } else if (list.length < 4) {
-//       localStorage.setItem(COMPARE_KEY, JSON.stringify([...list, product._id]));
-//     }
-//   };
-
-//   const addToCart = async (e, buyNow = false) => {
-//     e.stopPropagation();
-//     if (outOfStock) return;
-//     setAdding(true);
-//     try {
-//       const { data } = await axiosInstance.post('/cart/add', {
-//         productId: product._id,
-//         quantity: 1,
-//       });
-//       if (data.success) {
-//         window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { increase: 1 } }));
-//         if (buyNow) navigate('/checkout');
-//       }
-//     } catch (err) {
-//       console.error(err);
-//     } finally {
-//       setAdding(false);
-//     }
-//   };
+// const getColorName = (colorItem, index) => {
+//   if (typeof colorItem === 'string') {
+//     return colorItem;
+//   }
 
 //   return (
-//     // ⚡ FIX: "group" ko "group/card" named group banaya — pehle plain "group" class hone ki wajah se
-//     // Tailwind ka group-hover selector KISI BHI ancestor .group ke hover hone par trigger ho jata tha,
-//     // isliye ek card hover/click hote hi saare sibling cards ke Add/Buy overlay bhi active dikhne lagte the.
-//     // Named group (group/card + group-hover/card) sirf isi card tak scope rehta hai.
-//     <article
-//       className={`group/card relative flex flex-col bg-white rounded-2xl border border-gray-100 overflow-hidden
-//         hover:border-[#C8A253]/25 hover:shadow-[0_10px_30px_rgba(0,0,0,0.07)] transition-all duration-300 ease-out
-//         ${isCompact ? 'text-left' : ''} ${className}`}
-//       onMouseEnter={() => setImgHover(true)}
-//       onMouseLeave={() => setImgHover(false)}
-//     >
-//       {/* Image */}
-//       <div
-//         className={`relative bg-gradient-to-b from-[#FAFAFA] to-white overflow-hidden cursor-pointer
-//           ${isCompact ? 'aspect-square' : 'aspect-[4/5]'}`}
-//         onClick={() => onQuickView?.(product)}
-//       >
-//         {/* Badges */}
-//         <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-20 flex items-center gap-2 flex-wrap">
-//           {outOfStock ? (
-//             <span className="px-2.5 py-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wide bg-gray-900 text-white rounded-full">
-//               Sold Out
-//             </span>
-//           ) : hasDiscount ? (
-//             <span className="px-1.5 py-1 text-[9px] sm:text-[10px] font-bold bg-[#C8A253] text-black rounded-full shadow-sm w-fit">
-//   -{discountPercent}%
-// </span>
-//           ) : null}
-//           {!outOfStock && (
-//             <span className="px-2 py-0.5 text-[8px] sm:text-[9px] font-semibold bg-white/90 text-gray-600 rounded-full border border-gray-100 flex items-center gap-1 w-fit">
-//               <Shield size={9} className="text-[#C8A253]" /> 1 Year Warranty
-//             </span>
-//           )}
-//         </div>
-
-//         {/* Action icons */}
-//         <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 z-20 flex flex-col gap-1.5 opacity-100 lg:opacity-0 lg:group-hover/card:opacity-100 transition-opacity duration-300">
-//           <button
-//             type="button"
-//             onClick={handleWishlist}
-//             className="p-1.5 sm:p-2 rounded-full bg-white/95 shadow-md hover:bg-white hover:scale-105 transition-all"
-//             aria-label="Wishlist"
-//           >
-//             <Heart
-//               size={14}
-//               className={isWishlisted ? 'text-red-500 fill-red-500' : 'text-gray-700'}
-//               strokeWidth={2}
-//             />
-//           </button>
-//         </div>
-
-//         <img
-//           src={imgHover ? hoverImg : primaryImg}
-//           alt={product.name}
-//           loading="lazy"
-//           className={`absolute inset-0 w-full h-full object-contain p-5 sm:p-6 mix-blend-multiply transition-all duration-500
-//             ${outOfStock ? 'opacity-50 grayscale' : 'group-hover/card:scale-105'}`}
-//         />
-
-//         {/* Hover CTA overlay */}
-//         {!outOfStock && (
-//           <div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 translate-y-full group-hover/card:translate-y-0 transition-transform duration-300 ease-out bg-gradient-to-t from-white via-white/95 to-transparent pt-8">
-//             <div className="flex gap-2">
-//               <button
-//                 type="button"
-//                 disabled={adding}
-//                 onClick={(e) => addToCart(e, false)}
-//                 className="flex-1 flex items-center justify-center gap-1.5 py-2 sm:py-2.5 bg-[#0A0A0A] text-white text-[9px] sm:text-[10px] font-bold uppercase tracking-wider rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-60"
-//               >
-//                 <ShoppingCart size={12} /> Add
-//               </button>
-//               <button
-//                 type="button"
-//                 disabled={adding}
-//                 onClick={(e) => addToCart(e, true)}
-//                 className="flex-1 flex items-center justify-center gap-1.5 py-2 sm:py-2.5 bg-[#C8A253] text-black text-[9px] sm:text-[10px] font-bold uppercase tracking-wider rounded-xl hover:bg-[#d4b06a] transition-colors disabled:opacity-60"
-//               >
-//                 <Zap size={12} /> Buy
-//               </button>
-//             </div>
-//           </div>
-//         )}
-//       </div>
-
-//       {/* Content */}
-//       <div className="p-3 sm:p-4 flex flex-col flex-1" onClick={() => onQuickView?.(product)}>
-//         <p className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-widest text-[#C8A253] mb-1 truncate">
-//           {brand}
-//         </p>
-
-//         <h3 className="text-[13px] sm:text-sm font-medium text-gray-900 line-clamp-2 leading-snug mb-2 group-hover/card:text-[#8B6914] transition-colors cursor-pointer min-h-aut0">
-//           {product.name}
-//         </h3>
-
-//         {/* Rating */}
-//         <div className="flex items-center gap-1.5 mb-2">
-//           <div className="flex items-center gap-0.5">
-//             {[1, 2, 3, 4, 5].map((s) => (
-//               <Star
-//                 key={s}
-//                 size={10}
-//                 className={s <= Math.round(avg) ? 'text-amber-400 fill-amber-400' : 'text-gray-200 fill-gray-200'}
-//               />
-//             ))}
-//           </div>
-//           <span className="text-[9px] sm:text-[10px] text-gray-400">
-//             {avg.toFixed(1)}{count > 0 ? ` (${count})` : ''}
-//           </span>
-//         </div>
-
-//         <p className="text-[10px] sm:text-[11px] text-gray-500 line-clamp-1 mb-2">{highlight}</p>
-
-//         {/* Price */}
-//         <div className="flex items-baseline gap-2 mt-auto flex-wrap">
-//           <span className="text-[14px] sm:text-base font-bold text-gray-900">{formatPrice(sellingPrice)}</span>
-//           {hasDiscount && (
-//             <span className="text-[10px] sm:text-xs text-gray-400 line-through">{formatPrice(mrp)}</span>
-//           )}
-//         </div>
-//       </div>
-//     </article>
+//     colorItem?.color ||
+//     colorItem?.name ||
+//     colorItem?.hex ||
+//     colorItem?.colorCode ||
+//     `Color ${index + 1}`
 //   );
-// }
+// };
 
-// import { useState } from 'react';
-// import {
-//   Heart, Star, ShoppingCart, Zap, Shield, Clock, Truck,
-// } from 'lucide-react';
-// import { useNavigate } from 'react-router-dom';
-// import axiosInstance from '../../utils/axiosInstance';
-// import { useAuth } from '../../context/AuthContext';
-// import {
-//   getProductImg,
-//   getProductPricing,
-//   isOutOfStock,
-//   formatPrice,
-//   getRating,
-// } from '../../utils/productHelpers';
+// const getCleanColorHex = (colorItem) => {
+//   if (!colorItem) return '#111111';
 
-// const COMPARE_KEY = 'truee_compare';
+//   let raw =
+//     typeof colorItem === 'string'
+//       ? colorItem
+//       : (
+//           colorItem.hex ||
+//           colorItem.colorCode ||
+//           colorItem.color ||
+//           colorItem.name ||
+//           ''
+//         );
+
+//   raw = String(raw).trim().toLowerCase();
+
+//   if (raw.startsWith('#') || raw.startsWith('rgb')) {
+//     return raw;
+//   }
+
+//   const colorMap = {
+//     black: '#111111',
+//     'matte black': '#1a1a1a',
+//     'vintage black': '#181818',
+//     'black & brass': '#1A1A18',
+//     white: '#FFFFFF',
+//     'lunar white': '#F9F9F9',
+//     pearl: '#F0EAD6',
+//     cream: '#E8E4D9',
+//     beige: '#F5F5DC',
+//     gold: '#C8A253',
+//     'rose gold': '#B76E79',
+//     brass: '#B5944B',
+//     silver: '#D1D5DB',
+//     platinum: '#E5E4E2',
+//     grey: '#6B7280',
+//     gray: '#6B7280',
+//     graphite: '#383838',
+//     charcoal: '#36454F',
+//     'sage green': '#738276',
+//     olive: '#556B2F',
+//     'midnight blue': '#191970',
+//     navy: '#000080',
+//     blue: '#1e3a8a',
+//     brown: '#5C4033',
+//     walnut: '#773f1a',
+//     red: '#b91c1c',
+//   };
+
+//   if (colorMap[raw]) return colorMap[raw];
+
+//   if (raw.includes('black')) return '#111111';
+//   if (raw.includes('white')) return '#FFFFFF';
+//   if (raw.includes('gold')) return '#C8A253';
+//   if (raw.includes('silver')) return '#D1D5DB';
+//   if (raw.includes('grey') || raw.includes('gray')) {
+//     return '#6B7280';
+//   }
+//   if (raw.includes('blue')) return '#1e3a8a';
+//   if (raw.includes('green')) return '#738276';
+//   if (raw.includes('red')) return '#b91c1c';
+//   if (raw.includes('brown') || raw.includes('wood')) {
+//     return '#5C4033';
+//   }
+//   if (raw.includes('cream')) return '#E8E4D9';
+//   if (raw.includes('brass')) return '#B5944B';
+
+//   return '#111111';
+// };
 
 // export default function ProductCardPremium({
 //   product,
-//   onQuickView,
 //   variant = 'default',
 //   className = '',
 // }) {
 //   const { user } = useAuth();
 //   const navigate = useNavigate();
+
 //   const [isWishlisted, setIsWishlisted] = useState(false);
 //   const [imgHover, setImgHover] = useState(false);
 //   const [adding, setAdding] = useState(false);
+//   const [wishlistUpdating, setWishlistUpdating] = useState(false);
+//   const [activeVariantIdx, setActiveVariantIdx] = useState(0);
 
 //   if (!product) return null;
 
-//   const { mrp, sellingPrice, hasDiscount, discountPercent } = getProductPricing(product);
+//   const {
+//     mrp,
+//     sellingPrice,
+//     hasDiscount,
+//     discountPercent,
+//   } = getProductPricing(product);
+
 //   const outOfStock = isOutOfStock(product);
-//   const { avg, count } = getRating(product);
-//   const primaryImg = getProductImg(product, 0);
-//   const hoverImg = getProductImg(product, 1) !== primaryImg ? getProductImg(product, 1) : primaryImg;
+//   const rating = getRating(product);
+//   const avg = Number(rating.avg) || 0;
+//   const count = Number(rating.count) || 0;
+
+//   const name = product.name || 'Product';
+//   const productUrl = `/product/${product._id}`;
 //   const brand = product.brand || product.category || 'TRUEE';
-//   const highlight = product.shortDescription || product.tags?.[0] || 'Premium quality';
+
+//   const highlight =
+//     product.shortDescription ||
+//     product.tags?.[0] ||
+//     'Premium quality';
 
 //   const isCompact = variant === 'compact';
 
-//   const handleWishlist = async (e) => {
-//     e.stopPropagation();
-//     if (!user) return navigate('/login');
-//     setIsWishlisted(!isWishlisted);
+//   const realColors =
+//     Array.isArray(product.colors) && product.colors.length > 0
+//       ? product.colors
+//       : Array.isArray(product.variants) &&
+//           product.variants.length > 0
+//         ? product.variants
+//         : Array.isArray(product.colorVariants) &&
+//             product.colorVariants.length > 0
+//           ? product.colorVariants
+//           : [];
+
+//   const primaryImg = getProductImg(product, 0);
+//   const secondImg = getProductImg(product, 1);
+//   const hoverImg =
+//     secondImg && secondImg !== primaryImg
+//       ? secondImg
+//       : primaryImg;
+
+//   let displayImgSrc = imgHover ? hoverImg : primaryImg;
+
+//   if (realColors.length > 0) {
+//     const selectedVariant = realColors[activeVariantIdx];
+//     let variantImg = null;
+
+//     if (selectedVariant?.images?.length > 0) {
+//       variantImg =
+//         selectedVariant.images[0].url ||
+//         selectedVariant.images[0];
+//     } else if (selectedVariant?.image) {
+//       variantImg =
+//         selectedVariant.image.url ||
+//         selectedVariant.image;
+//     } else if (selectedVariant?.img) {
+//       variantImg =
+//         selectedVariant.img.url ||
+//         selectedVariant.img;
+//     } else if (product.images?.[activeVariantIdx]) {
+//       variantImg =
+//         product.images[activeVariantIdx].url ||
+//         product.images[activeVariantIdx];
+//     }
+
+//     if (typeof variantImg === 'string' && variantImg) {
+//       displayImgSrc =
+//         imgHover && activeVariantIdx === 0
+//           ? hoverImg
+//           : variantImg;
+//     }
+//   }
+
+//   const handleWishlist = async (event) => {
+//     event.stopPropagation();
+
+//     if (!user) {
+//       navigate('/login');
+//       return;
+//     }
+
+//     if (wishlistUpdating) return;
+
+//     const previousValue = isWishlisted;
+
+//     setWishlistUpdating(true);
+//     setIsWishlisted(!previousValue);
+
 //     try {
-//       await axiosInstance.post('/wishlist/toggle', { productId: product._id });
-//     } catch {
-//       setIsWishlisted(!isWishlisted);
+//       await axiosInstance.post('/wishlist/toggle', {
+//         productId: product._id,
+//       });
+//     } catch (error) {
+//       setIsWishlisted(previousValue);
+//       console.error('Wishlist update failed:', error);
+//     } finally {
+//       setWishlistUpdating(false);
 //     }
 //   };
 
-//   const handleCompare = (e) => {
-//     e.stopPropagation();
-//     const list = JSON.parse(localStorage.getItem(COMPARE_KEY) || '[]');
-//     if (list.includes(product._id)) {
-//       localStorage.setItem(COMPARE_KEY, JSON.stringify(list.filter((id) => id !== product._id)));
-//     } else if (list.length < 4) {
-//       localStorage.setItem(COMPARE_KEY, JSON.stringify([...list, product._id]));
-//     }
-//   };
+//   const addToCart = async (event, buyNow = false) => {
+//     event.stopPropagation();
 
-//   const addToCart = async (e, buyNow = false) => {
-//     e.stopPropagation();
-//     if (outOfStock) return;
+//     if (outOfStock || adding) return;
+
 //     setAdding(true);
+
 //     try {
 //       const { data } = await axiosInstance.post('/cart/add', {
 //         productId: product._id,
 //         quantity: 1,
 //       });
+
 //       if (data.success) {
-//         window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { increase: 1 } }));
-//         if (buyNow) navigate('/checkout');
+//         window.dispatchEvent(
+//           new CustomEvent('cartUpdated', {
+//             detail: { increase: 1 },
+//           })
+//         );
+
+//         if (buyNow) {
+//           navigate('/checkout');
+//         }
 //       }
-//     } catch (err) {
-//       console.error(err);
+//     } catch (error) {
+//       console.error('Add to cart failed:', error);
 //     } finally {
 //       setAdding(false);
 //     }
@@ -517,14 +258,30 @@
 //       onMouseEnter={() => setImgHover(true)}
 //       onMouseLeave={() => setImgHover(false)}
 //     >
-//       {/* Image */}
-//       <div
-//         // ⚡ FIX: 'aspect-[4/5]' ko hata kar 'aspect-square' kiya gaya hai height kam karne ke liye.
-//         className={`relative bg-gradient-to-b from-[#FAFAFA] to-white overflow-hidden cursor-pointer aspect-square`}
-//         onClick={() => onQuickView?.(product)}
-//       >
+//       {/* Product image link */}
+//       <div className="relative bg-gradient-to-b from-[#FAFAFA] to-white overflow-hidden aspect-square">
+//         <Link
+//           to={productUrl}
+//           aria-label={`View ${name}`}
+//           className="absolute inset-0 focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-black"
+//         >
+//           <img
+//             src={displayImgSrc}
+//             alt={name}
+//             width={400}
+//             height={400}
+//             loading="lazy"
+//             decoding="async"
+//             className={`absolute inset-0 w-full h-full object-contain p-4 mix-blend-multiply transition-all duration-500 ${
+//               outOfStock
+//                 ? 'opacity-50 grayscale'
+//                 : 'group-hover/card:scale-105'
+//             }`}
+//           />
+//         </Link>
+
 //         {/* Badges */}
-//         <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-20 flex items-center gap-2 flex-wrap">
+//         <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-20 flex items-center gap-2 flex-wrap pointer-events-none">
 //           {outOfStock ? (
 //             <span className="px-2.5 py-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wide bg-gray-900 text-white rounded-full">
 //               Sold Out
@@ -534,257 +291,426 @@
 //               -{discountPercent}%
 //             </span>
 //           ) : null}
+
 //           {!outOfStock && (
 //             <span className="px-2 py-0.5 text-[8px] sm:text-[9px] font-semibold bg-white/90 text-gray-600 rounded-full border border-gray-100 flex items-center gap-1 w-fit">
-//               <Shield size={9} className="text-[#C8A253]" /> 1 Year Warranty
+//               <Shield
+//                 size={9}
+//                 aria-hidden="true"
+//                 className="text-[#C8A253]"
+//               />
+//               1 Year Warranty
 //             </span>
 //           )}
 //         </div>
 
-//         {/* Action icons */}
-//         <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 z-20 flex flex-col gap-1.5 opacity-100 lg:opacity-0 lg:group-hover/card:opacity-100 transition-opacity duration-300">
+//         {/* Wishlist button */}
+//         <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 z-20 flex flex-col gap-1.5 opacity-100 lg:opacity-0 lg:group-hover/card:opacity-100 lg:group-focus-within/card:opacity-100 transition-opacity duration-300">
 //           <button
 //             type="button"
 //             onClick={handleWishlist}
-//             className="p-1.5 sm:p-2 rounded-full bg-white/95 shadow-md hover:bg-white hover:scale-105 transition-all"
-//             aria-label="Wishlist"
+//             disabled={wishlistUpdating}
+//             aria-label={
+//               isWishlisted
+//                 ? `Remove ${name} from wishlist`
+//                 : `Add ${name} to wishlist`
+//             }
+//             aria-pressed={isWishlisted}
+//             className="p-1.5 sm:p-2 rounded-full bg-white/95 shadow-md hover:bg-white hover:scale-105 transition-all disabled:opacity-60"
 //           >
 //             <Heart
 //               size={14}
-//               className={isWishlisted ? 'text-red-500 fill-red-500' : 'text-gray-700'}
+//               aria-hidden="true"
+//               className={
+//                 isWishlisted
+//                   ? 'text-red-500 fill-red-500'
+//                   : 'text-gray-700'
+//               }
 //               strokeWidth={2}
 //             />
 //           </button>
 //         </div>
 
-//         <img
-//           src={imgHover ? hoverImg : primaryImg}
-//           alt={product.name}
-//           loading="lazy"
-//           // ⚡ FIX: Image padding 'p-5 sm:p-6' se thodi kam ki (p-4) taaki image badi dikhe aur container height bach jaye
-//           className={`absolute inset-0 w-full h-full object-contain p-4 mix-blend-multiply transition-all duration-500
-//             ${outOfStock ? 'opacity-50 grayscale' : 'group-hover/card:scale-105'}`}
-//         />
-
-//         {/* Hover CTA overlay */}
+//         {/* Cart actions, separate from the product link */}
 //         {!outOfStock && (
-//           <div className="absolute inset-x-0 bottom-0 p-2 translate-y-full group-hover/card:translate-y-0 transition-transform duration-300 ease-out bg-gradient-to-t from-white via-white/95 to-transparent pt-6">
+//           <div className="absolute inset-x-0 bottom-0 z-20 p-2 translate-y-full group-hover/card:translate-y-0 group-focus-within/card:translate-y-0 transition-transform duration-300 ease-out bg-gradient-to-t from-white via-white/95 to-transparent pt-6">
 //             <div className="flex gap-2">
 //               <button
 //                 type="button"
 //                 disabled={adding}
-//                 onClick={(e) => addToCart(e, false)}
-//                 // ⚡ FIX: Padding 'py-2 sm:py-2.5' ko halka sa chota 'py-1.5 sm:py-2' kar diya
+//                 onClick={(event) => addToCart(event, false)}
+//                 aria-label={`Add ${name} to cart`}
 //                 className="flex-1 flex items-center justify-center gap-1.5 py-1.5 sm:py-2 bg-[#0A0A0A] text-white text-[9px] sm:text-[10px] font-bold uppercase tracking-wider rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-60"
 //               >
-//                 <ShoppingCart size={12} /> Add
+//                 <ShoppingCart size={12} aria-hidden="true" />
+//                 {adding ? 'Adding…' : 'Add'}
 //               </button>
+
 //               <button
 //                 type="button"
 //                 disabled={adding}
-//                 onClick={(e) => addToCart(e, true)}
+//                 onClick={(event) => addToCart(event, true)}
+//                 aria-label={`Buy ${name} now`}
 //                 className="flex-1 flex items-center justify-center gap-1.5 py-1.5 sm:py-2 bg-[#C8A253] text-black text-[9px] sm:text-[10px] font-bold uppercase tracking-wider rounded-xl hover:bg-[#d4b06a] transition-colors disabled:opacity-60"
 //               >
-//                 <Zap size={12} /> Buy
+//                 <Zap size={12} aria-hidden="true" />
+//                 Buy
 //               </button>
 //             </div>
 //           </div>
 //         )}
 //       </div>
 
-//       {/* Content */}
-//       {/* ⚡ FIX: Text spacing (padding aur margin) kam ki gayi hai */}
-//       <div className="p-3 flex flex-col flex-1" onClick={() => onQuickView?.(product)}>
+//       {/* Product content */}
+//       <div className="p-3 flex flex-col flex-1">
+//         {/* Color previews */}
+//         {realColors.length > 0 && (
+//           <div
+//             role="group"
+//             aria-label={`${name} color previews`}
+//             className="flex items-center gap-1.5 mb-2 min-h-4 flex-wrap"
+//           >
+//             {realColors.map((colorItem, index) => {
+//               const cleanHex = getCleanColorHex(colorItem);
+//               const colorName = getColorName(colorItem, index);
+//               const isActive = activeVariantIdx === index;
+
+//               return (
+//                 <button
+//                   key={colorItem?._id || index}
+//                   type="button"
+//                   onMouseEnter={() => setActiveVariantIdx(index)}
+//                   onFocus={() => setActiveVariantIdx(index)}
+//                   onClick={() => setActiveVariantIdx(index)}
+//                   onTouchStart={() => setActiveVariantIdx(index)}
+//                   aria-label={`Preview ${name} in ${colorName}`}
+//                   aria-pressed={isActive}
+//                   title={colorName}
+//                   className={`w-[12px] h-[12px] sm:w-[14px] sm:h-[14px] rounded-full border transition-all duration-300 cursor-pointer shadow-sm ${
+//                     isActive
+//                       ? 'border-gray-900 ring-2 ring-gray-400 ring-offset-1 scale-125 z-10'
+//                       : 'border-gray-300 hover:border-gray-500 hover:scale-110'
+//                   }`}
+//                   style={{ backgroundColor: cleanHex }}
+//                 />
+//               );
+//             })}
+//           </div>
+//         )}
+
 //         <p className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-widest text-[#C8A253] mb-0.5 truncate">
 //           {brand}
 //         </p>
 
-//         <h3 className="text-[12px] sm:text-[13px] font-medium text-gray-900 line-clamp-2 leading-snug mb-1.5 group-hover/card:text-[#8B6914] transition-colors cursor-pointer min-h-auto">
-//           {product.name}
+//         <h3 className="text-[12px] sm:text-[13px] font-medium text-gray-900 line-clamp-2 leading-snug mb-1.5 group-hover/card:text-[#8B6914] transition-colors min-h-auto">
+//           <Link
+//             to={productUrl}
+//             className="hover:underline focus-visible:underline"
+//           >
+//             {name}
+//           </Link>
 //         </h3>
 
 //         {/* Rating */}
 //         <div className="flex items-center gap-1.5 mb-1.5">
-//           <div className="flex items-center gap-0.5">
-//             {[1, 2, 3, 4, 5].map((s) => (
+//           <div
+//             aria-hidden="true"
+//             className="flex items-center gap-0.5"
+//           >
+//             {[1, 2, 3, 4, 5].map((star) => (
 //               <Star
-//                 key={s}
+//                 key={star}
 //                 size={10}
-//                 className={s <= Math.round(avg) ? 'text-amber-400 fill-amber-400' : 'text-gray-200 fill-gray-200'}
+//                 className={
+//                   star <= Math.round(avg)
+//                     ? 'text-amber-400 fill-amber-400'
+//                     : 'text-gray-200 fill-gray-200'
+//                 }
 //               />
 //             ))}
 //           </div>
-//           <span className="text-[9px] sm:text-[10px] text-gray-400">
-//             {avg.toFixed(1)}{count > 0 ? ` (${count})` : ''}
+
+//           <span
+//             aria-label={`${avg.toFixed(1)} out of 5, ${count} reviews`}
+//             className="text-[9px] sm:text-[10px] text-gray-400"
+//           >
+//             {avg.toFixed(1)}
+//             {count > 0 ? ` (${count})` : ''}
 //           </span>
 //         </div>
 
-//         <p className="text-[10px] sm:text-[11px] text-gray-500 line-clamp-1 mb-2">{highlight}</p>
+//         <p className="text-[10px] sm:text-[11px] text-gray-500 line-clamp-1 mb-2">
+//           {highlight}
+//         </p>
 
 //         {/* Price */}
 //         <div className="flex items-baseline gap-2 mt-auto flex-wrap">
-//           <span className="text-[13px] sm:text-[15px] font-bold text-gray-900">{formatPrice(sellingPrice)}</span>
-//           {hasDiscount && (
-//             <span className="text-[9px] sm:text-[11px] text-gray-400 line-through">{formatPrice(mrp)}</span>
+//           <span className="text-[13px] sm:text-[15px] font-bold text-gray-900">
+//             {sellingPrice > 0
+//               ? formatPrice(sellingPrice)
+//               : 'Price on Request'}
+//           </span>
+
+//           {sellingPrice > 0 && hasDiscount && (
+//             <span className="text-[9px] sm:text-[11px] text-gray-400 line-through">
+//               {formatPrice(mrp)}
+//             </span>
 //           )}
 //         </div>
 //       </div>
 //     </article>
 //   );
 // }
-import { useState } from 'react';
+
+import { useState } from "react";
 import {
-  Heart, Star, ShoppingCart, Zap, Shield, Clock, Truck,
-} from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../../utils/axiosInstance';
-import { useAuth } from '../../context/AuthContext';
+  Heart,
+  Star,
+  ShoppingCart,
+  Zap,
+  Shield,
+} from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "../../utils/axiosInstance";
+import { useAuth } from "../../context/AuthContext";
 import {
   getProductImg,
   getProductPricing,
   isOutOfStock,
   formatPrice,
   getRating,
-} from '../../utils/productHelpers';
+} from "../../utils/productHelpers";
 
-const COMPARE_KEY = 'truee_compare';
+const getColorName = (colorItem, index) => {
+  if (typeof colorItem === "string") {
+    return colorItem;
+  }
 
-// ⚡ SMART COLOR PARSER: Ab ye koi bhi mixed color name aaram se pehchan lega
+  return (
+    colorItem?.color ||
+    colorItem?.name ||
+    colorItem?.hex ||
+    colorItem?.colorCode ||
+    `Color ${index + 1}`
+  );
+};
+
 const getCleanColorHex = (colorItem) => {
-  if (!colorItem) return '#111111';
-  
-  // Color string nikalna (object ho ya direct string)
-  let raw = typeof colorItem === 'string' 
-    ? colorItem 
-    : (colorItem.hex || colorItem.colorCode || colorItem.color || colorItem.name || '');
-    
-  raw = raw.trim().toLowerCase();
-  
-  // Agar pehle se hi hex code (#FFF) hai toh direct use karo
-  if (raw.startsWith('#') || raw.startsWith('rgb')) return raw;
-  
-  // 1. EXACT PREMIUM MATCHES
+  if (!colorItem) return "#111111";
+
+  let raw =
+    typeof colorItem === "string"
+      ? colorItem
+      : colorItem.hex ||
+        colorItem.colorCode ||
+        colorItem.color ||
+        colorItem.name ||
+        "";
+
+  raw = String(raw).trim().toLowerCase();
+
+  if (raw.startsWith("#") || raw.startsWith("rgb")) {
+    return raw;
+  }
+
   const colorMap = {
-    'black': '#111111', 'matte black': '#1a1a1a', 'vintage black': '#181818', 'black & brass': '#1A1A18',
-    'white': '#FFFFFF', 'lunar white': '#F9F9F9', 'pearl': '#F0EAD6',
-    'cream': '#E8E4D9', 'beige': '#F5F5DC',
-    'gold': '#C8A253', 'rose gold': '#B76E79', 'brass': '#B5944B',
-    'silver': '#D1D5DB', 'platinum': '#E5E4E2',
-    'grey': '#6B7280', 'gray': '#6B7280', 'graphite': '#383838', 'charcoal': '#36454F',
-    'sage green': '#738276', 'olive': '#556B2F',
-    'midnight blue': '#191970', 'navy': '#000080', 'blue': '#1e3a8a',
-    'brown': '#5C4033', 'walnut': '#773f1a',
-    'red': '#b91c1c'
+    black: "#111111",
+    "matte black": "#1a1a1a",
+    "vintage black": "#181818",
+    "black & brass": "#1A1A18",
+    white: "#FFFFFF",
+    "lunar white": "#F9F9F9",
+    pearl: "#F0EAD6",
+    cream: "#E8E4D9",
+    beige: "#F5F5DC",
+    gold: "#C8A253",
+    "rose gold": "#B76E79",
+    brass: "#B5944B",
+    silver: "#D1D5DB",
+    platinum: "#E5E4E2",
+    grey: "#6B7280",
+    gray: "#6B7280",
+    graphite: "#383838",
+    charcoal: "#36454F",
+    "sage green": "#738276",
+    olive: "#556B2F",
+    "midnight blue": "#191970",
+    navy: "#000080",
+    blue: "#1e3a8a",
+    brown: "#5C4033",
+    walnut: "#773f1a",
+    red: "#b91c1c",
   };
-  
+
   if (colorMap[raw]) return colorMap[raw];
-  
-  // 2. SMART SUBSTRING MATCHES (Agar exact naam nahi mila, toh andaza lagayega)
-  if (raw.includes('black')) return '#111111';
-  if (raw.includes('white')) return '#FFFFFF';
-  if (raw.includes('gold')) return '#C8A253';
-  if (raw.includes('silver')) return '#D1D5DB';
-  if (raw.includes('grey') || raw.includes('gray')) return '#6B7280';
-  if (raw.includes('blue')) return '#1e3a8a';
-  if (raw.includes('green')) return '#738276';
-  if (raw.includes('red')) return '#b91c1c';
-  if (raw.includes('brown') || raw.includes('wood')) return '#5C4033';
-  if (raw.includes('cream')) return '#E8E4D9';
-  if (raw.includes('brass')) return '#B5944B';
-  
-  // Default color agar naam ekdum ajeeb ho
-  return '#111111'; 
+
+  if (raw.includes("black")) return "#111111";
+  if (raw.includes("white")) return "#FFFFFF";
+  if (raw.includes("gold")) return "#C8A253";
+  if (raw.includes("silver")) return "#D1D5DB";
+
+  if (raw.includes("grey") || raw.includes("gray")) {
+    return "#6B7280";
+  }
+
+  if (raw.includes("blue")) return "#1e3a8a";
+  if (raw.includes("green")) return "#738276";
+  if (raw.includes("red")) return "#b91c1c";
+
+  if (raw.includes("brown") || raw.includes("wood")) {
+    return "#5C4033";
+  }
+
+  if (raw.includes("cream")) return "#E8E4D9";
+  if (raw.includes("brass")) return "#B5944B";
+
+  return "#111111";
 };
 
 export default function ProductCardPremium({
   product,
-  onQuickView,
-  variant = 'default',
-  className = '',
+  variant = "default",
+  className = "",
 }) {
   const { user } = useAuth();
   const navigate = useNavigate();
+
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [imgHover, setImgHover] = useState(false);
   const [adding, setAdding] = useState(false);
-  
+  const [wishlistUpdating, setWishlistUpdating] = useState(false);
   const [activeVariantIdx, setActiveVariantIdx] = useState(0);
 
   if (!product) return null;
 
-  const { mrp, sellingPrice, hasDiscount, discountPercent } = getProductPricing(product);
-  const outOfStock = isOutOfStock(product);
-  const { avg, count } = getRating(product);
-  
-  const brand = product.brand || product.category || 'TRUEE';
-  const highlight = product.shortDescription || product.tags?.[0] || 'Premium quality';
-  const isCompact = variant === 'compact';
+  const {
+    mrp,
+    sellingPrice,
+    hasDiscount,
+    discountPercent,
+  } = getProductPricing(product);
 
-  const realColors = product.colors?.length > 0 ? product.colors
-    : product.variants?.length > 0 ? product.variants
-    : product.colorVariants?.length > 0 ? product.colorVariants
-    : [];
+  const outOfStock = isOutOfStock(product);
+
+  const rating = getRating(product);
+  const avg = Number(rating.avg) || 0;
+  const count = Number(rating.count) || 0;
+
+  const name = product.name || "Product";
+  const productUrl = `/product/${product._id}`;
+  const brand = product.brand || product.category || "TRUEE";
+
+  const highlight =
+    product.shortDescription ||
+    product.tags?.[0] ||
+    "Premium quality";
+
+  const isCompact = variant === "compact";
+
+  const realColors =
+    Array.isArray(product.colors) && product.colors.length > 0
+      ? product.colors
+      : Array.isArray(product.variants) &&
+          product.variants.length > 0
+        ? product.variants
+        : Array.isArray(product.colorVariants) &&
+            product.colorVariants.length > 0
+          ? product.colorVariants
+          : [];
 
   const primaryImg = getProductImg(product, 0);
-  const hoverImg = getProductImg(product, 1) !== primaryImg ? getProductImg(product, 1) : primaryImg;
+  const secondImg = getProductImg(product, 1);
+
+  const hoverImg =
+    secondImg && secondImg !== primaryImg
+      ? secondImg
+      : primaryImg;
 
   let displayImgSrc = imgHover ? hoverImg : primaryImg;
 
   if (realColors.length > 0) {
-     const v = realColors[activeVariantIdx];
-     let variantImg = null;
-     
-     if (v?.images?.length > 0) {
-        variantImg = v.images[0].url || v.images[0];
-     } else if (v?.image) {
-        variantImg = v.image;
-     } else if (v?.img) {
-        variantImg = v.img;
-     } else if (product.images && product.images[activeVariantIdx]) {
-        variantImg = product.images[activeVariantIdx].url || product.images[activeVariantIdx];
-     }
-     
-     if (variantImg) {
-        displayImgSrc = (imgHover && activeVariantIdx === 0) ? hoverImg : variantImg;
-     }
+    const selectedVariant = realColors[activeVariantIdx];
+    let variantImg = null;
+
+    if (selectedVariant?.images?.length > 0) {
+      variantImg =
+        selectedVariant.images[0].url ||
+        selectedVariant.images[0];
+    } else if (selectedVariant?.image) {
+      variantImg =
+        selectedVariant.image.url ||
+        selectedVariant.image;
+    } else if (selectedVariant?.img) {
+      variantImg =
+        selectedVariant.img.url ||
+        selectedVariant.img;
+    } else if (product.images?.[activeVariantIdx]) {
+      variantImg =
+        product.images[activeVariantIdx].url ||
+        product.images[activeVariantIdx];
+    }
+
+    if (typeof variantImg === "string" && variantImg) {
+      displayImgSrc =
+        imgHover && activeVariantIdx === 0
+          ? hoverImg
+          : variantImg;
+    }
   }
 
-  const handleWishlist = async (e) => {
-    e.stopPropagation();
-    if (!user) return navigate('/login');
-    setIsWishlisted(!isWishlisted);
+  const handleWishlist = async (event) => {
+    event.stopPropagation();
+
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    if (wishlistUpdating) return;
+
+    const previousValue = isWishlisted;
+
+    setWishlistUpdating(true);
+    setIsWishlisted(!previousValue);
+
     try {
-      await axiosInstance.post('/wishlist/toggle', { productId: product._id });
-    } catch {
-      setIsWishlisted(!isWishlisted);
+      await axiosInstance.post("/wishlist/toggle", {
+        productId: product._id,
+      });
+    } catch (error) {
+      setIsWishlisted(previousValue);
+      console.error("Wishlist update failed:", error);
+    } finally {
+      setWishlistUpdating(false);
     }
   };
 
-  const handleCompare = (e) => {
-    e.stopPropagation();
-    const list = JSON.parse(localStorage.getItem(COMPARE_KEY) || '[]');
-    if (list.includes(product._id)) {
-      localStorage.setItem(COMPARE_KEY, JSON.stringify(list.filter((id) => id !== product._id)));
-    } else if (list.length < 4) {
-      localStorage.setItem(COMPARE_KEY, JSON.stringify([...list, product._id]));
-    }
-  };
+  const addToCart = async (event, buyNow = false) => {
+    event.stopPropagation();
 
-  const addToCart = async (e, buyNow = false) => {
-    e.stopPropagation();
-    if (outOfStock) return;
+    if (outOfStock || adding) return;
+
     setAdding(true);
+
     try {
-      const { data } = await axiosInstance.post('/cart/add', {
+      const { data } = await axiosInstance.post("/cart/add", {
         productId: product._id,
         quantity: 1,
       });
+
       if (data.success) {
-        window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { increase: 1 } }));
-        if (buyNow) navigate('/checkout');
+        window.dispatchEvent(
+          new CustomEvent("cartUpdated", {
+            detail: { increase: 1 },
+          })
+        );
+
+        if (buyNow) {
+          navigate("/checkout");
+        }
       }
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error("Add to cart failed:", error);
     } finally {
       setAdding(false);
     }
@@ -794,17 +720,34 @@ export default function ProductCardPremium({
     <article
       className={`group/card relative flex flex-col bg-white rounded-2xl border border-gray-100 overflow-hidden
         hover:border-[#C8A253]/25 hover:shadow-[0_10px_30px_rgba(0,0,0,0.07)] transition-all duration-300 ease-out
-        ${isCompact ? 'text-left' : ''} ${className}`}
+        ${isCompact ? "text-left" : ""} ${className}`}
       onMouseEnter={() => setImgHover(true)}
       onMouseLeave={() => setImgHover(false)}
     >
-      {/* Image Container */}
-      <div
-        className={`relative bg-gradient-to-b from-[#FAFAFA] to-white overflow-hidden cursor-pointer aspect-square`}
-        onClick={() => onQuickView?.(product)}
-      >
+      {/* Product image */}
+      <div className="relative bg-gradient-to-b from-[#FAFAFA] to-white overflow-hidden aspect-square">
+        <Link
+          to={productUrl}
+          aria-label={`View ${name}`}
+          className="absolute inset-0 focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-black"
+        >
+          <img
+            src={displayImgSrc}
+            alt={name}
+            width={400}
+            height={400}
+            loading="lazy"
+            decoding="async"
+            className={`absolute inset-0 w-full h-full object-contain p-4 mix-blend-multiply transition-all duration-500 ${
+              outOfStock
+                ? "opacity-50 grayscale"
+                : "group-hover/card:scale-105"
+            }`}
+          />
+        </Link>
+
         {/* Badges */}
-        <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-20 flex items-center gap-2 flex-wrap">
+        <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-20 flex items-center gap-2 flex-wrap pointer-events-none">
           {outOfStock ? (
             <span className="px-2.5 py-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wide bg-gray-900 text-white rounded-full">
               Sold Out
@@ -814,87 +757,108 @@ export default function ProductCardPremium({
               -{discountPercent}%
             </span>
           ) : null}
+
           {!outOfStock && (
             <span className="px-2 py-0.5 text-[8px] sm:text-[9px] font-semibold bg-white/90 text-gray-600 rounded-full border border-gray-100 flex items-center gap-1 w-fit">
-              <Shield size={9} className="text-[#C8A253]" /> 1 Year Warranty
+              <Shield
+                size={9}
+                aria-hidden="true"
+                className="text-[#C8A253]"
+              />
+              1 Year Warranty
             </span>
           )}
         </div>
 
-        {/* Action icons */}
-        <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 z-20 flex flex-col gap-1.5 opacity-100 lg:opacity-0 lg:group-hover/card:opacity-100 transition-opacity duration-300">
+        {/* Wishlist */}
+        <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 z-20 flex flex-col gap-1.5 opacity-100 lg:opacity-0 lg:group-hover/card:opacity-100 lg:group-focus-within/card:opacity-100 transition-opacity duration-300">
           <button
             type="button"
             onClick={handleWishlist}
-            className="p-1.5 sm:p-2 rounded-full bg-white/95 shadow-md hover:bg-white hover:scale-105 transition-all"
-            aria-label="Wishlist"
+            disabled={wishlistUpdating}
+            aria-label={
+              isWishlisted
+                ? `Remove ${name} from wishlist`
+                : `Add ${name} to wishlist`
+            }
+            aria-pressed={isWishlisted}
+            className="p-1.5 sm:p-2 rounded-full bg-white/95 shadow-md hover:bg-white hover:scale-105 transition-all disabled:opacity-60"
           >
             <Heart
               size={14}
-              className={isWishlisted ? 'text-red-500 fill-red-500' : 'text-gray-700'}
+              aria-hidden="true"
+              className={
+                isWishlisted
+                  ? "text-red-500 fill-red-500"
+                  : "text-gray-700"
+              }
               strokeWidth={2}
             />
           </button>
         </div>
 
-        <img
-          src={displayImgSrc}
-          alt={product.name}
-          loading="lazy"
-          className={`absolute inset-0 w-full h-full object-contain p-4 mix-blend-multiply transition-all duration-500
-            ${outOfStock ? 'opacity-50 grayscale' : 'group-hover/card:scale-105'}`}
-        />
-
-        {/* Hover CTA overlay */}
+        {/* Cart actions */}
         {!outOfStock && (
-          <div className="absolute inset-x-0 bottom-0 p-2 translate-y-full group-hover/card:translate-y-0 transition-transform duration-300 ease-out bg-gradient-to-t from-white via-white/95 to-transparent pt-6">
+          <div className="absolute inset-x-0 bottom-0 z-20 p-2 translate-y-full group-hover/card:translate-y-0 group-focus-within/card:translate-y-0 transition-transform duration-300 ease-out bg-gradient-to-t from-white via-white/95 to-transparent pt-6">
             <div className="flex gap-2">
               <button
                 type="button"
                 disabled={adding}
-                onClick={(e) => addToCart(e, false)}
+                onClick={(event) => addToCart(event, false)}
+                aria-label={`Add ${name} to cart`}
                 className="flex-1 flex items-center justify-center gap-1.5 py-1.5 sm:py-2 bg-[#0A0A0A] text-white text-[9px] sm:text-[10px] font-bold uppercase tracking-wider rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-60"
               >
-                <ShoppingCart size={12} /> Add
+                <ShoppingCart size={12} aria-hidden="true" />
+                {adding ? "Adding…" : "Add"}
               </button>
+
               <button
                 type="button"
                 disabled={adding}
-                onClick={(e) => addToCart(e, true)}
+                onClick={(event) => addToCart(event, true)}
+                aria-label={`Buy ${name} now`}
                 className="flex-1 flex items-center justify-center gap-1.5 py-1.5 sm:py-2 bg-[#C8A253] text-black text-[9px] sm:text-[10px] font-bold uppercase tracking-wider rounded-xl hover:bg-[#d4b06a] transition-colors disabled:opacity-60"
               >
-                <Zap size={12} /> Buy
+                <Zap size={12} aria-hidden="true" />
+                Buy
               </button>
             </div>
           </div>
         )}
       </div>
 
-      {/* Content */}
-      <div className="p-3 flex flex-col flex-1" onClick={() => onQuickView?.(product)}>
-        
-        {/* Color Dots */}
+      {/* Product content */}
+      <div className="p-3 flex flex-col flex-1">
+        {/* Color previews */}
         {realColors.length > 0 && (
-          <div className="flex items-center gap-1.5 mb-2 h-4">
-            {realColors.map((colorItem, idx) => {
+          <div
+            role="group"
+            aria-label={`${name} color previews`}
+            className="flex items-center gap-1.5 mb-2 min-h-4 flex-wrap"
+          >
+            {realColors.map((colorItem, index) => {
               const cleanHex = getCleanColorHex(colorItem);
-              const isActive = activeVariantIdx === idx;
+              const colorName = getColorName(colorItem, index);
+              const isActive = activeVariantIdx === index;
+
               return (
                 <button
-  key={idx}
-  type="button"
-  onMouseEnter={(e) => { e.stopPropagation(); setActiveVariantIdx(idx); }}
-  onClick={(e) => { e.stopPropagation(); setActiveVariantIdx(idx); }}
-  onTouchStart={(e) => { e.stopPropagation(); setActiveVariantIdx(idx); }}
-  // ⚡ YAHAN FIX KIYA HAI: opacity-70 hata diya aur size thoda bada (w-3.5) kar diya
-  className={`w-[12px] h-[12px] sm:w-[14px] sm:h-[14px] rounded-full border transition-all duration-300 cursor-pointer shadow-sm ${
-    isActive
-      ? 'border-gray-900 ring-2 ring-gray-400 ring-offset-1 scale-125 z-10'
-      : 'border-gray-300 hover:border-gray-500 hover:scale-110'
-  }`}
-  style={{ backgroundColor: cleanHex }}
-  title={typeof colorItem === 'string' ? colorItem : (colorItem.color || colorItem.name)}
-/>
+                  key={colorItem?._id || index}
+                  type="button"
+                  onMouseEnter={() => setActiveVariantIdx(index)}
+                  onFocus={() => setActiveVariantIdx(index)}
+                  onClick={() => setActiveVariantIdx(index)}
+                  onTouchStart={() => setActiveVariantIdx(index)}
+                  aria-label={`Preview ${name} in ${colorName}`}
+                  aria-pressed={isActive}
+                  title={colorName}
+                  className={`w-[12px] h-[12px] sm:w-[14px] sm:h-[14px] rounded-full border transition-all duration-300 cursor-pointer shadow-sm ${
+                    isActive
+                      ? "border-gray-900 ring-2 ring-gray-400 ring-offset-1 scale-125 z-10"
+                      : "border-gray-300 hover:border-gray-500 hover:scale-110"
+                  }`}
+                  style={{ backgroundColor: cleanHex }}
+                />
               );
             })}
           </div>
@@ -904,33 +868,60 @@ export default function ProductCardPremium({
           {brand}
         </p>
 
-        <h3 className="text-[12px] sm:text-[13px] font-medium text-gray-900 line-clamp-2 leading-snug mb-1.5 group-hover/card:text-[#8B6914] transition-colors cursor-pointer min-h-auto">
-          {product.name}
+        <h3 className="text-[12px] sm:text-[13px] font-medium text-gray-900 line-clamp-2 leading-snug mb-1.5 group-hover/card:text-[#8B6914] transition-colors min-h-auto">
+          <Link
+            to={productUrl}
+            className="hover:underline focus-visible:underline"
+          >
+            {name}
+          </Link>
         </h3>
 
-        {/* Rating */}
-        <div className="flex items-center gap-1.5 mb-1.5">
-          <div className="flex items-center gap-0.5">
-            {[1, 2, 3, 4, 5].map((s) => (
-              <Star
-                key={s}
-                size={10}
-                className={s <= Math.round(avg) ? 'text-amber-400 fill-amber-400' : 'text-gray-200 fill-gray-200'}
-              />
-            ))}
-          </div>
-          <span className="text-[9px] sm:text-[10px] text-gray-400">
-            {avg.toFixed(1)}{count > 0 ? ` (${count})` : ''}
-          </span>
-        </div>
+        {/* Reviews hone par hi rating dikhegi */}
+        {count > 0 && avg > 0 && (
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <div
+              aria-hidden="true"
+              className="flex items-center gap-0.5"
+            >
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  size={10}
+                  className={
+                    star <= Math.round(avg)
+                      ? "text-amber-400 fill-amber-400"
+                      : "text-gray-200 fill-gray-200"
+                  }
+                />
+              ))}
+            </div>
 
-        <p className="text-[10px] sm:text-[11px] text-gray-500 line-clamp-1 mb-2">{highlight}</p>
+            <span
+              aria-label={`${avg.toFixed(1)} out of 5, ${count} reviews`}
+              className="text-[9px] sm:text-[10px] text-gray-500"
+            >
+              {avg.toFixed(1)} ({count})
+            </span>
+          </div>
+        )}
+
+        <p className="text-[10px] sm:text-[11px] text-gray-500 line-clamp-1 mb-2">
+          {highlight}
+        </p>
 
         {/* Price */}
         <div className="flex items-baseline gap-2 mt-auto flex-wrap">
-          <span className="text-[13px] sm:text-[15px] font-bold text-gray-900">{formatPrice(sellingPrice)}</span>
-          {hasDiscount && (
-            <span className="text-[9px] sm:text-[11px] text-gray-400 line-through">{formatPrice(mrp)}</span>
+          <span className="text-[13px] sm:text-[15px] font-bold text-gray-900">
+            {sellingPrice > 0
+              ? formatPrice(sellingPrice)
+              : "Price on Request"}
+          </span>
+
+          {sellingPrice > 0 && hasDiscount && (
+            <span className="text-[9px] sm:text-[11px] text-gray-400 line-through">
+              {formatPrice(mrp)}
+            </span>
           )}
         </div>
       </div>

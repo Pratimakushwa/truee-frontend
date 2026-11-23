@@ -151,7 +151,7 @@ export default function ProductCard({ product, onQuickView }) {
         </h4>
 
         <div className="flex flex-col items-center gap-1 mt-auto w-full">
-          <div className="flex items-center justify-center gap-2">
+          {/* <div className="flex items-center justify-center gap-2">
             {discountPercentage > 0 && (
               <span className="text-xl font-bold" style={{ color: 'var(--theme-primary)' }}>
                 -{discountPercentage}%
@@ -163,6 +163,22 @@ export default function ProductCard({ product, onQuickView }) {
           </div>
           
           {(product.discountPrice > 0 || isDealActive) && (
+              <div className="text-xs text-gray-400 font-medium">
+                M.R.P.: <span className="line-through">{formatPrice(product.price)}</span>
+              </div>
+          )} */}
+          <div className="flex items-center justify-center gap-2">
+            {displayPrice > 0 && discountPercentage > 0 && (
+              <span className="text-xl font-bold" style={{ color: 'var(--theme-primary)' }}>
+                -{discountPercentage}%
+              </span>
+            )}
+            <span className="text-2xl font-bold" style={{ color: 'var(--theme-text-main)' }}>
+              {displayPrice > 0 ? formatPrice(displayPrice) : "Price on Request"}
+            </span>
+          </div>
+          
+          {displayPrice > 0 && (product.discountPrice > 0 || isDealActive) && (
               <div className="text-xs text-gray-400 font-medium">
                 M.R.P.: <span className="line-through">{formatPrice(product.price)}</span>
               </div>

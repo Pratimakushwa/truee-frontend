@@ -104,7 +104,7 @@ import MyCoupons from '../../components/MyCoupons';
 import MyReviews from '../../components/MyReviews';
 import RewardWallet from '../../components/rewards/RewardWallet';
 import Wishlist from '../Wishlist';
-import MyNewsletterStatus from "../../components/MyNewsletterStatus";
+import MyNewsletterStatus from "../../components/Mynewsletterstatus";
 // import NewsletterSubscribers from "../Admin/NewsletterSubscribers";
 import axiosInstance from "../../utils/axiosInstance";
 

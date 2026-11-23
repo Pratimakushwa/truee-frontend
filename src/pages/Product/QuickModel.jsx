@@ -453,9 +453,17 @@ export default function QuickViewModal({ product: initialProduct, onClose }) {
           <div className="w-full md:w-1/2 sticky top-0 self-start mt-5">
             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">{fullProduct?.brand}</span>
             <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight">{fullProduct?.name}</h1>
-            <div className="flex items-baseline gap-3 mb-6">
+            {/* <div className="flex items-baseline gap-3 mb-6">
               <p className="text-2xl font-bold text-black">₹{mainPrice}</p>
               {fullProduct?.discountPrice > 0 && <p className="text-lg text-gray-400 line-through">₹{fullProduct.price}</p>}
+            </div> */}
+            <div className="flex items-baseline gap-3 mb-6">
+              <p className="text-2xl font-bold text-black">
+                {mainPrice > 0 ? `₹${mainPrice}` : "Price on Request"}
+              </p>
+              {mainPrice > 0 && fullProduct?.discountPrice > 0 && (
+                <p className="text-lg text-gray-400 line-through">₹{fullProduct.price}</p>
+              )}
             </div>
             
             {hasVariants && (
@@ -612,9 +620,16 @@ export default function QuickViewModal({ product: initialProduct, onClose }) {
           <div className="sticky bottom-0 bg-white/80 backdrop-blur-xl border-t py-4 px-6 md:px-10 flex justify-between items-center z-[100] animate-in slide-in-from-bottom duration-500 shadow-[0_-20px_50px_rgba(0,0,0,0.1)]">
             <div className="flex items-center gap-3">
               <img src={galleryImages[0]} alt="p" className="w-10 h-10 object-contain mix-blend-multiply bg-gray-100 rounded-lg p-1" />
-              <div>
+              {/* <div>
                 <span className="font-bold text-sm block">{fullProduct?.name}</span>
                 <span className="text-[10px] font-bold text-[#C8A253]">₹{bundleTotal} Bundle</span>
+              </div> */}
+
+              <div>
+                <span className="font-bold text-sm block">{fullProduct?.name}</span>
+                <span className="text-[10px] font-bold text-[#C8A253]">
+                  {bundleTotal > 0 ? `₹${bundleTotal} Bundle` : "Price on Request"}
+                </span>
               </div>
             </div>
             <div className="hidden lg:flex gap-8">

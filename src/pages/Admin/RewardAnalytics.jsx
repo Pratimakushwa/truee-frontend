@@ -1,62 +1,152 @@
-import React, { useState, useEffect } from 'react';
-import { Coins, TrendingUp, Users, Wallet } from 'lucide-react';
-import axiosInstance from '../../utils/axiosInstance';
+
+import React, { useState, useEffect } from "react";
+import { Coins, TrendingUp, Users, Wallet } from "lucide-react";
+import axiosInstance from "../../utils/axiosInstance";
 
 export default function RewardAnalytics() {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axiosInstance.get('/admin/rewards/analytics')
-      .then(({ data }) => { if (data.success) setAnalytics(data.analytics); })
+    axiosInstance
+      .get("/admin/rewards/analytics")
+      .then(({ data }) => {
+        if (data.success) setAnalytics(data.analytics);
+      })
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="p-10 text-gray-400 animate-pulse">Loading analytics...</div>;
+  if (loading) {
+    return (
+      <div className="animate-pulse rounded-2xl border border-slate-200 bg-white p-8 text-sm text-slate-500">
+        Loading analytics...
+      </div>
+    );
+  }
 
   const a = analytics || {};
+
   const cards = [
-    { label: 'Total Coins Issued', value: a.totalCoinsIssued ?? 0, icon: Coins, color: 'text-[#C8A253]' },
-    { label: 'Total Coins Redeemed', value: a.totalCoinsRedeemed ?? 0, icon: TrendingUp, color: 'text-green-400' },
-    { label: 'Active Wallet Value', value: `₹${a.activeWalletValue ?? 0}`, icon: Wallet, color: 'text-blue-400' },
-    { label: 'Pending Rewards', value: a.pendingRewards ?? 0, icon: Users, color: 'text-purple-400' },
-    { label: 'Active Wallets', value: a.activeWallets ?? 0, icon: Users, color: 'text-gray-400' },
-    { label: 'Reward Usage %', value: `${a.rewardUsagePercent ?? 0}%`, icon: TrendingUp, color: 'text-[#C8A253]' },
+    {
+      label: "Total Coins Issued",
+      value: a.totalCoinsIssued ?? 0,
+      icon: Coins,
+      color: "bg-[#FAF5E9] text-[#A67D2D]",
+    },
+    {
+      label: "Total Coins Redeemed",
+      value: a.totalCoinsRedeemed ?? 0,
+      icon: TrendingUp,
+      color: "bg-emerald-50 text-emerald-600",
+    },
+    {
+      label: "Active Wallet Value",
+      value: `₹${a.activeWalletValue ?? 0}`,
+      icon: Wallet,
+      color: "bg-blue-50 text-blue-600",
+    },
+    {
+      label: "Pending Rewards",
+      value: a.pendingRewards ?? 0,
+      icon: Users,
+      color: "bg-purple-50 text-purple-600",
+    },
+    {
+      label: "Active Wallets",
+      value: a.activeWallets ?? 0,
+      icon: Users,
+      color: "bg-slate-100 text-slate-600",
+    },
+    {
+      label: "Reward Usage %",
+      value: `${a.rewardUsagePercent ?? 0}%`,
+      icon: TrendingUp,
+      color: "bg-[#FAF5E9] text-[#A67D2D]",
+    },
   ];
 
   return (
-    <div className="p-6 md:p-8">
-      <h1 className="text-2xl font-serif text-[#C8A253] mb-2">Reward Analytics</h1>
-      <p className="text-gray-500 text-sm mb-8">Loyalty program performance overview</p>
+    <div className="space-y-7 text-slate-900">
+      <header>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#A67D2D]">
+          Loyalty programme
+        </p>
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+          Reward Analytics
+        </h1>
+
+        <p className="mt-2 text-sm leading-6 text-slate-500">
+          Loyalty program performance overview
+        </p>
+      </header>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {cards.map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="bg-[#111] border border-[#C8A253]/20 rounded-xl p-5">
-            <Icon size={20} className={`${color} mb-3`} />
-            <p className="text-[10px] uppercase tracking-widest text-gray-500">{label}</p>
-            <p className="text-2xl font-bold text-white mt-1">{value}</p>
+          <div
+            key={label}
+            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-sm font-medium text-slate-500">
+                {label}
+              </p>
+
+              <span
+                className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${color}`}
+              >
+                <Icon size={22} />
+              </span>
+            </div>
+
+            <p className="mt-5 break-words text-3xl font-semibold tracking-tight text-slate-900">
+              {value}
+            </p>
           </div>
         ))}
       </div>
 
       {a.topCustomers?.length > 0 && (
-        <div className="bg-[#111] border border-[#C8A253]/20 rounded-xl p-6">
-          <h2 className="text-lg font-bold text-white mb-4">Top Customers by Balance</h2>
-          <div className="space-y-3">
+        <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
+            <h2 className="text-lg font-semibold text-slate-900">
+              Top Customers by Balance
+            </h2>
+
+            <p className="mt-1 text-sm text-slate-500">
+              Customer wallet balances ranked by available coins.
+            </p>
+          </div>
+
+          <div className="divide-y divide-slate-100">
             {a.topCustomers.map((w, i) => (
-              <div key={w._id} className="flex justify-between items-center py-2 border-b border-gray-800 last:border-0">
-                <div className="flex items-center gap-3">
-                  <span className="w-6 h-6 rounded-full bg-[#C8A253]/20 text-[#C8A253] text-xs font-bold flex items-center justify-center">{i + 1}</span>
-                  <div>
-                    <p className="text-white text-sm font-medium">{w.user?.name || 'Customer'}</p>
-                    <p className="text-gray-500 text-xs">{w.user?.email}</p>
+              <div
+                key={w._id}
+                className="flex flex-col gap-3 px-5 py-5 transition hover:bg-slate-50/70 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+              >
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#FAF5E9] text-xs font-semibold text-[#967025]">
+                    {i + 1}
+                  </span>
+
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-800">
+                      {w.user?.name || "Customer"}
+                    </p>
+
+                    <p className="mt-1 break-all text-xs text-slate-500">
+                      {w.user?.email}
+                    </p>
                   </div>
                 </div>
-                <span className="text-[#C8A253] font-bold">{w.availableCoins} coins</span>
+
+                <span className="ml-12 w-fit shrink-0 rounded-full border border-[#EADFC7] bg-[#FCFAF5] px-3 py-1.5 text-sm font-semibold text-[#967025] sm:ml-0">
+                  {w.availableCoins} coins
+                </span>
               </div>
             ))}
           </div>
-        </div>
+        </section>
       )}
     </div>
   );

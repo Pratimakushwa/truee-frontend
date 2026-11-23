@@ -1,4 +1,4 @@
-/* TRUEE Admin Dashboard Design Tokens */
+/* TRUEE Admin Dashboard Design Tokens
 :root {
   --admin-sidebar-w: 260px;
   --admin-sidebar-collapsed: 72px;
@@ -53,4 +53,121 @@
 }
 .admin-drawer-enter {
   animation: admin-slide-in 0.22s ease-out;
+} */
+/* TRUEE Admin — light theme */
+
+.admin-shell {
+  --admin-sidebar-w: 260px;
+  --admin-sidebar-collapsed: 72px;
+  --admin-header-h: 76px;
+
+  --admin-bg: #f7f8fa;
+  --admin-surface: #ffffff;
+  --admin-sidebar: #ffffff;
+  --admin-sidebar-hover: #f8fafc;
+  --admin-border: #e5e7eb;
+  --admin-text: #111827;
+  --admin-muted: #6b7280;
+  --admin-accent: #c8a253;
+  --admin-accent-soft: #fcfaef;
+
+  min-height: 100vh;
+  background: var(--admin-bg);
+  color: var(--admin-text);
+  color-scheme: light;
+}
+
+.admin-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  box-shadow: 0 2px 5px rgb(15 23 42 / 3%);
+}
+
+.admin-card-interactive {
+  cursor: pointer;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.admin-card-interactive:hover {
+  border-color: rgb(200 162 83 / 40%);
+  box-shadow: 0 8px 24px rgb(15 23 42 / 6%);
+  transform: translateY(-2px);
+}
+
+.admin-shell button,
+.admin-shell input,
+.admin-shell select,
+.admin-shell textarea {
+  font: inherit;
+}
+
+.admin-shell button:disabled {
+  cursor: not-allowed;
+}
+
+.admin-shell a:focus-visible,
+.admin-shell button:focus-visible {
+  outline: 2px solid #c8a253;
+  outline-offset: 3px;
+}
+
+.admin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+}
+
+.admin-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 999px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #b6bdc7;
+}
+
+@keyframes admin-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.admin-drawer-enter {
+  animation: admin-slide-in 0.22s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-drawer-enter {
+    animation: none;
+  }
+
+  .admin-card-interactive {
+    transition: none;
+  }
+
+  .admin-card-interactive:hover {
+    transform: none;
+  }
+
+  .admin-shell aside {
+    transition: none;
+  }
 }

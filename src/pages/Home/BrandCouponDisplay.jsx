@@ -1,3 +1,4 @@
+
 // import React, { useState, useEffect } from 'react';
 // import axiosInstance from "../../utils/axiosInstance";
 // import { Copy, Check } from 'lucide-react';
@@ -36,10 +37,14 @@
 //     };
 
 //     return (
-//         <div className="w-full bg-zinc-950 py-4 border-b border-zinc-800">
+//         <div 
+//             className="w-full bg-zinc-950 py-4 border-b border-zinc-800 font-sans"
+//             style={{ fontFamily: "'Inter', sans-serif" }} // ⚡ Applied Inter font globally
+//         >
 //             <div className="max-w-7xl mx-auto px-4">
 //                 <div className="flex items-center gap-6 overflow-x-auto custom-scrollbar">
-//                     <span className="text-[#C8A253] font-serif font-bold text-sm whitespace-nowrap uppercase tracking-widest hidden md:block">
+//                     {/* ⚡ Changed font-serif to font-sans */}
+//                     <span className="text-[#C8A253] font-sans font-bold text-sm whitespace-nowrap uppercase tracking-widest hidden md:block">
 //                         Brand Specials:
 //                     </span>
                     
@@ -72,81 +77,162 @@
 // };
 
 // export default BrandCouponDisplay;
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from "react";
 import axiosInstance from "../../utils/axiosInstance";
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check } from "lucide-react";
 
-const BrandCouponDisplay = () => {
-    const [brandCoupons, setBrandCoupons] = useState([]);
-    const [copied, setCopied] = useState(null);
+export default function BrandCouponDisplay() {
+  const [brandCoupons, setBrandCoupons] = useState([]);
+  const [copied, setCopied] = useState(null);
+  const [copyError, setCopyError] = useState("");
 
-    useEffect(() => {
-        const fetchBrandCoupons = async () => {
-            try {
-                const { data } = await axiosInstance.get('/coupons/all');
-                const now = new Date();
-                
-                const filtered = (data.coupons || []).filter(c => {
-                    const statusMatch = !c.status || c.status.toLowerCase() === 'active';
-                    const expDate = new Date(c.expiryDate);
-                    const dateMatch = !isNaN(expDate.getTime()) && expDate > now;
-                    const isBrandCoupon = c.applicableBrand && c.applicableBrand !== 'All';
+  const copyTimerRef = useRef(null);
 
-                    return statusMatch && dateMatch && isBrandCoupon;
-                });
+  useEffect(() => {
+    let cancelled = false;
 
-                setBrandCoupons(filtered);
-            } catch (err) { console.error("Brand coupons load error", err); }
-        };
-        fetchBrandCoupons();
-    }, []);
+    const fetchBrandCoupons = async () => {
+      try {
+        const { data } = await axiosInstance.get("/coupons/all");
 
-    if (brandCoupons.length === 0) return null;
+        const coupons = Array.isArray(data?.coupons)
+          ? data.coupons
+          : [];
 
-    const copyCode = (code) => {
-        navigator.clipboard.writeText(code);
-        setCopied(code);
-        setTimeout(() => setCopied(null), 2000);
+        const now = Date.now();
+
+        const filtered = coupons.filter((coupon) => {
+          const statusMatch =
+            !coupon.status ||
+            String(coupon.status).toLowerCase() === "active";
+
+          const expiryTime = new Date(
+            coupon.expiryDate
+          ).getTime();
+
+          const dateMatch =
+            Number.isFinite(expiryTime) && expiryTime > now;
+
+          const brand = String(
+            coupon.applicableBrand || ""
+          ).trim();
+
+          const isBrandCoupon =
+            brand.length > 0 && brand.toLowerCase() !== "all";
+
+          return (
+            statusMatch &&
+            dateMatch &&
+            isBrandCoupon &&
+            coupon.code
+          );
+        });
+
+        if (!cancelled) {
+          setBrandCoupons(filtered);
+        }
+      } catch (error) {
+        console.error("Brand coupons load error:", error);
+      }
     };
 
-    return (
-        <div 
-            className="w-full bg-zinc-950 py-4 border-b border-zinc-800 font-sans"
-            style={{ fontFamily: "'Inter', sans-serif" }} // ⚡ Applied Inter font globally
-        >
-            <div className="max-w-7xl mx-auto px-4">
-                <div className="flex items-center gap-6 overflow-x-auto custom-scrollbar">
-                    {/* ⚡ Changed font-serif to font-sans */}
-                    <span className="text-[#C8A253] font-sans font-bold text-sm whitespace-nowrap uppercase tracking-widest hidden md:block">
-                        Brand Specials:
-                    </span>
-                    
-                    {brandCoupons.map(c => (
-                        <div key={c._id} className="flex items-center gap-4 bg-zinc-900 px-4 py-2 rounded-sm border border-zinc-800 flex-shrink-0">
-                            {/* Brand Badge */}
-                            <span className="text-[9px] font-bold uppercase bg-white text-black px-2 py-0.5 rounded-sm">
-                                {c.applicableBrand}
-                            </span>
-                            
-                            {/* Offer Text */}
-                            <span className="text-white text-xs font-medium tracking-wide">
-                                {c.discountType === 'percentage' ? `${c.discountValue}% OFF` : `₹${c.discountValue} OFF`}
-                            </span>
+    fetchBrandCoupons();
 
-                            {/* Copy Code */}
-                            <div 
-                                onClick={() => copyCode(c.code)}
-                                className="flex items-center gap-2 cursor-pointer text-[#C8A253] text-[10px] font-bold hover:text-white transition-colors"
-                            >
-                                <span className="border-b border-dotted border-[#C8A253]">{c.code}</span>
-                                {copied === c.code ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
-                            </div>
-                        </div>
-                    ))}
-                </div>
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => clearTimeout(copyTimerRef.current);
+  }, []);
+
+  const copyCode = async (code) => {
+    setCopyError("");
+    setCopied(null);
+    clearTimeout(copyTimerRef.current);
+
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(code);
+
+      copyTimerRef.current = setTimeout(() => {
+        setCopied(null);
+      }, 2000);
+    } catch {
+      setCopyError(
+        "Could not copy automatically. Please copy the coupon code manually."
+      );
+    }
+  };
+
+  if (brandCoupons.length === 0) return null;
+
+  return (
+    <section
+      aria-label="Brand coupon offers"
+      className="w-full bg-zinc-950 py-4 border-b border-zinc-800 font-sans"
+      style={{ fontFamily: "'Inter', sans-serif" }}
+    >
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex items-center gap-6 overflow-x-auto custom-scrollbar">
+          <span className="text-[#C8A253] font-sans font-bold text-sm whitespace-nowrap uppercase tracking-widest hidden md:block">
+            Brand Specials:
+          </span>
+
+          {brandCoupons.map((coupon) => (
+            <div
+              key={coupon._id || coupon.code}
+              className="flex items-center gap-4 bg-zinc-900 px-4 py-2 rounded-sm border border-zinc-800 flex-shrink-0"
+            >
+              <span className="text-[9px] font-bold uppercase bg-white text-black px-2 py-0.5 rounded-sm">
+                {coupon.applicableBrand}
+              </span>
+
+              <span className="text-white text-xs font-medium tracking-wide">
+                {coupon.discountType === "percentage"
+                  ? `${coupon.discountValue}% OFF`
+                  : `₹${coupon.discountValue} OFF`}
+              </span>
+
+              <button
+                type="button"
+                onClick={() => copyCode(coupon.code)}
+                aria-label={`Copy ${coupon.applicableBrand} coupon code ${coupon.code}`}
+                className="flex items-center gap-2 cursor-pointer text-[#C8A253] text-[10px] font-bold hover:text-white transition-colors"
+              >
+                <span className="border-b border-dotted border-[#C8A253]">
+                  {coupon.code}
+                </span>
+
+                {copied === coupon.code ? (
+                  <Check
+                    size={12}
+                    aria-hidden="true"
+                    className="text-green-500"
+                  />
+                ) : (
+                  <Copy size={12} aria-hidden="true" />
+                )}
+              </button>
             </div>
+          ))}
         </div>
-    );
-};
 
-export default BrandCouponDisplay;
+        <p role="status" className="sr-only">
+          {copied ? `Coupon code ${copied} copied.` : ""}
+        </p>
+
+        {copyError && (
+          <p
+            role="alert"
+            className="text-xs text-red-300 mt-2"
+          >
+            {copyError}
+          </p>
+        )}
+      </div>
+    </section>
+  );
+}

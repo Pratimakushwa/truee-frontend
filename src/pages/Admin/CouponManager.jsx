@@ -1,646 +1,703 @@
 
 
-import React, { useState, useEffect } from 'react';
-import axiosInstance from '../../utils/axiosInstance';
-import { Trash2, PlusCircle, Loader2, Tag, Settings, Users, MonitorPlay } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import axiosInstance from "../../utils/axiosInstance";
+import {
+  Trash2,
+  PlusCircle,
+  Loader2,
+  Tag,
+  Settings,
+  Users,
+  MonitorPlay,
+} from "lucide-react";
 
-export default function CouponManager() {
-    const [coupons, setCoupons] = useState([]);
-    const [loading, setLoading] = useState(false);
-    
-    // All 10 Conditions & Campaign Types Added
-    const [formData, setFormData] = useState({ 
-        campaignType: 'Festival', name: '', code: '', description: '', 
-        discountType: 'flat', discountValue: '', maxDiscount: '', 
-        startDate: '', expiryDate: '', status: 'Active',
-        minOrderValue: '', maxOrderValue: '', 
-        applicableFor: 'All Users', isFirstOrderOnly: false,
-        applicableBrand: 'All', applicableCategory: 'All',
-        usageLimit: '', perUserLimit: 1, 
-        showOn: [], 
-        isReward: false, rewardCondition: '', rewardCode: '',
-        autoApply: false
-    });
+const inputClass =
+  "w-full min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8A253] focus:ring-4 focus:ring-[#C8A253]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400";
 
-    useEffect(() => { fetchCoupons(); }, []);
-
-    const fetchCoupons = async () => {
-        setLoading(true);
-        try {
-            const { data } = await axiosInstance.get('/coupons/all');
-            setCoupons(data.coupons || []);
-        } catch (err) { console.error("Error fetching coupons", err); } 
-        finally { setLoading(false); }
-    };
-
-    // STATUS TOGGLE LOGIC
-    const updateCouponStatus = async (id, newStatus) => {
-        try {
-            await axiosInstance.put(`/coupons/update/${id}`, { status: newStatus });
-            fetchCoupons(); // Refresh list automatically
-        } catch (err) { alert("Error updating status"); }
-    };
-
-    // ⚡ NAYA: EXPIRY DATE UPDATE LOGIC
-    const handleDateUpdate = async (id, newDate) => {
-        try {
-            await axiosInstance.put(`/coupons/update-date/${id}`, { newExpiryDate: newDate });
-            fetchCoupons(); // Refresh table automatically
-        } catch (err) {
-            alert("Error updating expiry date");
-            console.error(err);
-        }
-    };
-
-    // ⚡ NAYA: Date format theek karne ka helper (HTML date input ke liye)
-    const formatDateForInput = (isoDate) => {
-        if (!isoDate) return '';
-        return new Date(isoDate).toISOString().split('T')[0];
-    };
-
-    const handleCheckboxChange = (e, field) => {
-        setFormData({ ...formData, [field]: e.target.checked });
-    };
-
-    const handleShowOnChange = (e) => {
-        const value = e.target.value;
-        setFormData(prev => ({
-            ...prev,
-            showOn: prev.showOn.includes(value) 
-                ? prev.showOn.filter(item => item !== value) 
-                : [...prev.showOn, value]
-        }));
-    };
-
-    const createCoupon = async (e) => {
-        e.preventDefault();
-        try {
-            await axiosInstance.post('/coupons/create', formData);
-            alert("Coupon Created Successfully!");
-            setFormData({ 
-                campaignType: 'Festival', name: '', code: '', description: '', 
-                discountType: 'flat', discountValue: '', maxDiscount: '', 
-                startDate: '', expiryDate: '', status: 'Active', 
-                minOrderValue: '', maxOrderValue: '', 
-                applicableFor: 'All Users', isFirstOrderOnly: false, 
-                applicableBrand: 'All', applicableCategory: 'All',
-                usageLimit: '', perUserLimit: 1, showOn: [], 
-                isReward: false, rewardCondition: '', rewardCode: '', autoApply: false
-            });
-            fetchCoupons();
-        } catch (err) { alert(err.response?.data?.message || "Error creating coupon"); }
-    };
-
-    const deleteCoupon = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this campaign?")) return;
-        try {
-            await axiosInstance.delete(`/coupons/${id}`);
-            fetchCoupons();
-        } catch (err) { alert("Error deleting coupon"); }
-    };
-
-    return (
-        <div className="p-4 md:p-8 bg-gray-50 min-h-screen text-gray-800 font-sans">
-            <h1 className="text-3xl font-serif font-bold mb-8 text-black flex items-center gap-3">
-                <Tag size={32} className="text-[#C8A253]" /> Premium Coupon Management
-            </h1>
-
-            {/* --- ADD NEW COUPON FORM --- */}
-            <div className="bg-white p-6 md:p-8 rounded-xl border border-gray-200 mb-10 shadow-sm">
-                <h2 className="text-xl font-bold mb-6 flex items-center gap-2 border-b pb-4">
-                    <PlusCircle size={24} /> Create New Campaign
-                </h2>
-                
-                <form onSubmit={createCoupon} className="space-y-8">
-                    <div className="space-y-4">
-                        <h3 className="font-bold text-gray-700 flex items-center gap-2 bg-gray-100 p-3 rounded"><Tag size={18}/> 1. Campaign Information</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <select value={formData.campaignType} onChange={(e) => setFormData({...formData, campaignType: e.target.value})} className="border p-3 rounded font-semibold text-blue-700 bg-blue-50">
-                                <option value="Festival">🎉 Festival Offer</option>
-                                <option value="Brand Offer">🏷️ Brand Offer</option>
-                                <option value="Welcome Offer">👋 Welcome Offer</option>
-                                <option value="Checkout Offer">🛒 Checkout Offer</option>
-                            </select>
-                            <input type="text" placeholder="Coupon Name (e.g. Diwali Sale)" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="border p-3 rounded" required />
-                            <input type="text" placeholder="Code (e.g. DIWALI500)" value={formData.code} onChange={(e) => setFormData({...formData, code: e.target.value.toUpperCase()})} className="border p-3 rounded font-bold uppercase" required />
-                            <select value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})} className={`border p-3 rounded font-bold ${formData.status === 'Active' ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'}`}>
-                                <option value="Active">🟢 Active</option>
-                                <option value="Inactive">🔴 Inactive</option>
-                            </select>
-                        </div>
-                        <input type="text" placeholder="Description (e.g. Get ₹500 OFF on your first purchase)" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} className="border p-3 rounded w-full" />
-                    </div>
-
-                    <div className="space-y-4">
-                        <h3 className="font-bold text-gray-700 flex items-center gap-2 bg-gray-100 p-3 rounded"><Settings size={18}/> 2. Discount Rules & Validity</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                            <select value={formData.discountType} onChange={(e) => setFormData({...formData, discountType: e.target.value})} className="border p-3 rounded">
-                                <option value="flat">Flat Discount (₹)</option>
-                                <option value="percentage">Percentage (%)</option>
-                                <option value="free_shipping">Free Shipping</option>
-                            </select>
-                            <input type="number" placeholder="Discount Value" value={formData.discountValue} onChange={(e) => setFormData({...formData, discountValue: e.target.value})} className="border p-3 rounded" required={formData.discountType !== 'free_shipping'} disabled={formData.discountType === 'free_shipping'} />
-                            <input type="number" placeholder="Max Discount (₹)" value={formData.maxDiscount} onChange={(e) => setFormData({...formData, maxDiscount: e.target.value})} className="border p-3 rounded" disabled={formData.discountType !== 'percentage'} title="Only for Percentage" />
-                            <div className="flex flex-col">
-                                <label className="text-xs text-gray-500 mb-1">Start Date</label>
-                                <input type="date" value={formData.startDate} onChange={(e) => setFormData({...formData, startDate: e.target.value})} className="border p-2 rounded" required />
-                            </div>
-                            <div className="flex flex-col">
-                                <label className="text-xs text-gray-500 mb-1">Expiry Date</label>
-                                <input type="date" value={formData.expiryDate} onChange={(e) => setFormData({...formData, expiryDate: e.target.value})} className="border p-2 rounded" required />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="space-y-4">
-                        <h3 className="font-bold text-gray-700 flex items-center gap-2 bg-gray-100 p-3 rounded"><Users size={18}/> 3. Targeting & Limits</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <input type="number" placeholder="Min Order Amount (₹)" value={formData.minOrderValue} onChange={(e) => setFormData({...formData, minOrderValue: e.target.value})} className="border p-3 rounded" />
-                            <input type="number" placeholder="Total Usage Limit (e.g. 500)" value={formData.usageLimit} onChange={(e) => setFormData({...formData, usageLimit: e.target.value})} className="border p-3 rounded" />
-                            <select value={formData.applicableFor} onChange={(e) => setFormData({...formData, applicableFor: e.target.value})} className="border p-3 rounded">
-                                <option value="All Users">All Users</option>
-                                <option value="New Users">New Users Only</option>
-                                <option value="Premium Users">Premium Users Only</option>
-                            </select>
-                            <select value={formData.applicableBrand} onChange={(e) => setFormData({...formData, applicableBrand: e.target.value})} className="border p-3 rounded">
-                                <option value="All">All Brands</option>
-                                <option value="Marshall">Marshall</option>
-                                <option value="Sony">Sony</option>
-                                <option value="Bose">Bose</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="space-y-4">
-                        <h3 className="font-bold text-gray-700 flex items-center gap-2 bg-gray-100 p-3 rounded"><MonitorPlay size={18}/> 4. Display Settings</h3>
-                        <div className="flex flex-wrap gap-6 mb-4 p-4 border rounded bg-gray-50">
-                            <label className="flex items-center gap-2 cursor-pointer font-medium"><input type="checkbox" checked={formData.isFirstOrderOnly} onChange={(e) => handleCheckboxChange(e, 'isFirstOrderOnly')} className="w-5 h-5 accent-black" /> First Order Only</label>
-                            <label className="flex items-center gap-2 cursor-pointer font-medium"><input type="checkbox" checked={formData.autoApply} onChange={(e) => handleCheckboxChange(e, 'autoApply')} className="w-5 h-5 accent-black" /> Auto Apply Coupon</label>
-                            <label className="flex items-center gap-2 cursor-pointer font-medium text-[#C8A253]"><input type="checkbox" checked={formData.isReward} onChange={(e) => handleCheckboxChange(e, 'isReward')} className="w-5 h-5 accent-[#C8A253]" /> Set as Reward Coupon</label>
-                        </div>
-
-                        <div className="p-4 border rounded">
-                            <p className="font-bold mb-3 text-sm">Where should this coupon be visible? (Select multiple):</p>
-                            <div className="flex flex-wrap gap-4">
-                                {['Home Banner', 'Product Page', 'Checkout Page', 'Payment Success', 'My Coupons'].map(place => (
-                                    <label key={place} className="flex items-center gap-2 text-sm border p-2 rounded bg-white cursor-pointer hover:bg-gray-50 transition-colors">
-                                        <input type="checkbox" value={place} checked={formData.showOn.includes(place)} onChange={handleShowOnChange} className="accent-black w-4 h-4" /> {place}
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    <button type="submit" className="w-full bg-black text-white px-6 py-4 rounded font-bold hover:bg-gray-900 transition-all uppercase tracking-widest text-lg shadow-lg active:scale-95">
-                        Publish Campaign
-                    </button>
-                </form>
-            </div>
-
-            {/* --- ACTIVE CAMPAIGNS TABLE --- */}
-            <h2 className="text-2xl font-bold mb-4 font-serif">Active Campaigns & Database</h2>
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-x-auto">
-                <table className="w-full text-left whitespace-nowrap">
-                    <thead className="bg-gray-100 border-b text-sm">
-                        <tr>
-                            <th className="p-4">Campaign</th>
-                            <th className="p-4">Code</th>
-                            <th className="p-4">Discount</th>
-                            <th className="p-4 text-center">Status</th>
-                            <th className="p-4">Placements</th>
-                            <th className="p-4">Used</th>
-                            <th className="p-4">Expiry</th>
-                            <th className="p-4 text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {loading ? <tr><td colSpan="8" className="p-10 text-center"><Loader2 className="animate-spin mx-auto text-black" size={32} /></td></tr> 
-                        : coupons.length === 0 ? <tr><td colSpan="8" className="p-10 text-center text-gray-500">No campaigns found.</td></tr> 
-                        : coupons.map(c => (
-                            <tr key={c._id} className="border-t hover:bg-gray-50">
-                                <td className="p-4"><div className="font-bold text-sm">{c.name}</div></td>
-                                <td className="p-4 font-bold tracking-widest">{c.code}</td>
-                                <td className="p-4 text-xs font-semibold">{c.discountType === 'percentage' ? `${c.discountValue}%` : `₹${c.discountValue}`}</td>
-                                
-                                <td className="p-4 text-center">
-                                    <select 
-                                        value={c.status} 
-                                        onChange={(e) => updateCouponStatus(c._id, e.target.value)}
-                                        className={`px-3 py-1 rounded text-xs font-bold border-none cursor-pointer focus:ring-0 ${c.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
-                                    >
-                                        <option value="Active">🟢 Active</option>
-                                        <option value="Inactive">🔴 Inactive</option>
-                                    </select>
-                                </td>
-
-                                <td className="p-4 text-xs">{c.showOn?.join(', ') || 'Hidden'}</td>
-                                <td className="p-4 text-sm">{c.usedCount || 0}</td>
-                                
-                                {/* ⚡ YAHAN DATE INPUT AAYEGA */}
-                                <td className="p-4 text-sm">
-                                    <input
-                                        type="date"
-                                        value={formatDateForInput(c.expiryDate)}
-                                        onChange={(e) => handleDateUpdate(c._id, e.target.value)}
-                                        className="bg-transparent border border-gray-300 rounded px-2 py-1 text-sm text-gray-700 focus:outline-none focus:border-[#C8A253] focus:ring-1 focus:ring-[#C8A253] cursor-pointer"
-                                    />
-                                </td>
-                                
-                                <td className="p-4 text-center">
-                                    <button onClick={() => deleteCoupon(c._id)} className="text-red-500 hover:text-red-700 p-2"><Trash2 size={18} /></button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    );
+function Field({ label, children, className = "" }) {
+  return (
+    <label className={`block min-w-0 ${className}`}>
+      <span className="mb-2 block text-xs font-medium text-slate-600">
+        {label}
+      </span>
+      {children}
+    </label>
+  );
 }
 
+function FormSection({ title, icon: Icon, children }) {
+  return (
+    <section className="space-y-5">
+      <div className="flex items-center gap-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#FAF5E9] text-[#A67D2D]">
+          <Icon size={18} />
+        </span>
+        <h3 className="text-sm font-semibold text-slate-800">
+          {title}
+        </h3>
+      </div>
+      {children}
+    </section>
+  );
+}
 
-// import React, { useState, useEffect } from 'react';
-// import axiosInstance from '../../utils/axiosInstance';
-// import { Trash2, PlusCircle, Loader2, Tag, Settings, Users, MonitorPlay } from 'lucide-react';
+export default function CouponManager() {
+  const [coupons, setCoupons] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-// export default function CouponManager() {
-//     const [coupons, setCoupons] = useState([]);
-//     const [loading, setLoading] = useState(false);
-    
-//     // ... (States aur Functions wahi purane wale hi rahenge) ...
-//     const [formData, setFormData] = useState({ 
-//         campaignType: 'Festival', name: '', code: '', description: '', 
-//         discountType: 'flat', discountValue: '', maxDiscount: '', 
-//         startDate: '', expiryDate: '', status: 'Active',
-//         minOrderValue: '', maxOrderValue: '', 
-//         applicableFor: 'All Users', isFirstOrderOnly: false,
-//         applicableBrand: 'All', applicableCategory: 'All',
-//         usageLimit: '', perUserLimit: 1, 
-//         showOn: [], 
-//         isReward: false, rewardCondition: '', rewardCode: '',
-//         autoApply: false
-//     });
+  const [formData, setFormData] = useState({
+    campaignType: "Festival",
+    name: "",
+    code: "",
+    description: "",
+    discountType: "flat",
+    discountValue: "",
+    maxDiscount: "",
+    startDate: "",
+    expiryDate: "",
+    status: "Active",
+    minOrderValue: "",
+    maxOrderValue: "",
+    applicableFor: "All Users",
+    isFirstOrderOnly: false,
+    applicableBrand: "All",
+    applicableCategory: "All",
+    usageLimit: "",
+    perUserLimit: 1,
+    showOn: [],
+    isReward: false,
+    rewardCondition: "",
+    rewardCode: "",
+    autoApply: false,
+  });
 
-//     useEffect(() => { fetchCoupons(); }, []);
+  useEffect(() => {
+    fetchCoupons();
+  }, []);
 
-//     const fetchCoupons = async () => {
-//         setLoading(true);
-//         try {
-//             const { data } = await axiosInstance.get('/coupons/all');
-//             setCoupons(data.coupons || []);
-//         } catch (err) { console.error("Error fetching coupons", err); } 
-//         finally { setLoading(false); }
-//     };
+  const fetchCoupons = async () => {
+    setLoading(true);
+    try {
+      const { data } = await axiosInstance.get("/coupons/all");
+      setCoupons(data.coupons || []);
+    } catch (err) {
+      console.error("Error fetching coupons", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-//     const updateCouponStatus = async (id, newStatus) => {
-//         try {
-//             await axiosInstance.put(`/coupons/update/${id}`, { status: newStatus });
-//             fetchCoupons();
-//         } catch (err) { alert("Error updating status"); }
-//     };
+  const updateCouponStatus = async (id, newStatus) => {
+    try {
+      await axiosInstance.put(`/coupons/update/${id}`, {
+        status: newStatus,
+      });
+      fetchCoupons();
+    } catch (err) {
+      alert("Error updating status");
+    }
+  };
 
-//     const handleDateUpdate = async (id, newDate) => {
-//         try {
-//             await axiosInstance.put(`/coupons/update-date/${id}`, { newExpiryDate: newDate });
-//             fetchCoupons();
-//         } catch (err) {
-//             alert("Error updating expiry date");
-//             console.error(err);
-//         }
-//     };
+  const handleDateUpdate = async (id, newDate) => {
+    try {
+      await axiosInstance.put(`/coupons/update-date/${id}`, {
+        newExpiryDate: newDate,
+      });
+      fetchCoupons();
+    } catch (err) {
+      alert("Error updating expiry date");
+      console.error(err);
+    }
+  };
 
-//     const formatDateForInput = (isoDate) => {
-//         if (!isoDate) return '';
-//         return new Date(isoDate).toISOString().split('T')[0];
-//     };
+  const formatDateForInput = (isoDate) => {
+    if (!isoDate) return "";
+    return new Date(isoDate).toISOString().split("T")[0];
+  };
 
-//     const handleCheckboxChange = (e, field) => {
-//         setFormData({ ...formData, [field]: e.target.checked });
-//     };
+  const handleCheckboxChange = (e, field) => {
+    setFormData({
+      ...formData,
+      [field]: e.target.checked,
+    });
+  };
 
-//     const handleShowOnChange = (e) => {
-//         const value = e.target.value;
-//         setFormData(prev => ({
-//             ...prev,
-//             showOn: prev.showOn.includes(value) 
-//                 ? prev.showOn.filter(item => item !== value) 
-//                 : [...prev.showOn, value]
-//         }));
-//     };
+  const handleShowOnChange = (e) => {
+    const value = e.target.value;
 
-//     const createCoupon = async (e) => {
-//         e.preventDefault();
-//         try {
-//             await axiosInstance.post('/coupons/create', formData);
-//             alert("Coupon Created Successfully!");
-//             setFormData({ 
-//                 campaignType: 'Festival', name: '', code: '', description: '', 
-//                 discountType: 'flat', discountValue: '', maxDiscount: '', 
-//                 startDate: '', expiryDate: '', status: 'Active', 
-//                 minOrderValue: '', maxOrderValue: '', 
-//                 applicableFor: 'All Users', isFirstOrderOnly: false, 
-//                 applicableBrand: 'All', applicableCategory: 'All',
-//                 usageLimit: '', perUserLimit: 1, showOn: [], 
-//                 isReward: false, rewardCondition: '', rewardCode: '', autoApply: false
-//             });
-//             fetchCoupons();
-//         } catch (err) { alert(err.response?.data?.message || "Error creating coupon"); }
-//     };
+    setFormData((prev) => ({
+      ...prev,
+      showOn: prev.showOn.includes(value)
+        ? prev.showOn.filter((item) => item !== value)
+        : [...prev.showOn, value],
+    }));
+  };
 
-//     const deleteCoupon = async (id) => {
-//         if (!window.confirm("Are you sure you want to delete this campaign?")) return;
-//         try {
-//             await axiosInstance.delete(`/coupons/${id}`);
-//             fetchCoupons();
-//         } catch (err) { alert("Error deleting coupon"); }
-//     };
+  const createCoupon = async (e) => {
+    e.preventDefault();
 
-//     // Premium Input Style
-//     const inputBaseClass = "w-full bg-[#0F0F0F] border border-[#2A2A2A] rounded-xl p-3.5 text-gray-200 placeholder-gray-600 focus:outline-none focus:border-[#C8A253] focus:ring-2 focus:ring-[#C8A253]/20 transition-all duration-300 hover:border-[#444]";
+    try {
+      await axiosInstance.post("/coupons/create", formData);
+      alert("Coupon Created Successfully!");
 
-//     return (
-//         <div className="p-4 md:p-8  rounded-2xl  bg-[#050505] min-h-screen text-gray-200 font-sans selection:bg-[#C8A253]/30">
-//             <h1 className="text-3xl font-serif font-bold mb-8 text-white flex items-center gap-3">
-//                 <Tag size={32} className="text-[#C8A253]" /> Premium Campaign Management
-//             </h1>
+      setFormData({
+        campaignType: "Festival",
+        name: "",
+        code: "",
+        description: "",
+        discountType: "flat",
+        discountValue: "",
+        maxDiscount: "",
+        startDate: "",
+        expiryDate: "",
+        status: "Active",
+        minOrderValue: "",
+        maxOrderValue: "",
+        applicableFor: "All Users",
+        isFirstOrderOnly: false,
+        applicableBrand: "All",
+        applicableCategory: "All",
+        usageLimit: "",
+        perUserLimit: 1,
+        showOn: [],
+        isReward: false,
+        rewardCondition: "",
+        rewardCode: "",
+        autoApply: false,
+      });
 
-//             {/* --- ADD NEW COUPON FORM --- */}
-//             <div className="bg-[#0A0A0A] p-6 md:p-8 rounded-3xl border border-[#1A1A1A] mb-10 shadow-2xl hover:border-[#2A2A2A] transition-all duration-500">
-//                 <h2 className="text-xl font-bold mb-8 text-white flex items-center gap-3">
-//                     <PlusCircle size={22} className="text-[#C8A253]" /> Create New Campaign
-//                 </h2>
-                
-//                 <form onSubmit={createCoupon} className="space-y-8">
-//                     {/* Section 1: Campaign Info */}
-//                     <div className="group bg-[#0F0F0F] p-6 rounded-2xl border border-[#1A1A1A] hover:border-[#2A2A2A] transition-all duration-300">
-//                         <h3 className="text-sm font-bold text-[#C8A253] tracking-widest uppercase mb-4">Campaign Information</h3>
-//                         <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
-//                             <select value={formData.campaignType} onChange={(e) => setFormData({...formData, campaignType: e.target.value})} className={inputBaseClass}>
-//                                 <option value="Festival">🎉 Festival Offer</option>
-//                                 <option value="Brand Offer">🏷️ Brand Offer</option>
-//                                 <option value="Welcome Offer">👋 Welcome Offer</option>
-//                             </select>
-//                             <input type="text" placeholder="Coupon Name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className={inputBaseClass} />
-//                             <input type="text" placeholder="CODE" value={formData.code} onChange={(e) => setFormData({...formData, code: e.target.value.toUpperCase()})} className={`${inputBaseClass} font-bold text-[#C8A253]`} />
-//                             <select value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})} className={inputBaseClass}>
-//                                 <option value="Active">🟢 Active</option>
-//                                 <option value="Inactive">🔴 Inactive</option>
-//                             </select>
-//                         </div>
-//                     </div>
+      fetchCoupons();
+    } catch (err) {
+      alert(
+        err.response?.data?.message || "Error creating coupon"
+      );
+    }
+  };
 
-//                     {/* Section 2: Discount */}
-//                     <div className="bg-[#0F0F0F] p-6 rounded-2xl border border-[#1A1A1A] hover:border-[#2A2A2A] transition-all duration-300">
-//                         <h3 className="text-sm font-bold text-[#C8A253] tracking-widest uppercase mb-4">Discount Rules</h3>
-//                         <div className="grid grid-cols-1 md:grid-cols-5 gap-5">
-//                             <select value={formData.discountType} onChange={(e) => setFormData({...formData, discountType: e.target.value})} className={inputBaseClass}>
-//                                 <option value="flat">Flat Discount</option>
-//                                 <option value="percentage">Percentage</option>
-//                             </select>
-//                             <input type="number" placeholder="Value" value={formData.discountValue} onChange={(e) => setFormData({...formData, discountValue: e.target.value})} className={inputBaseClass} />
-//                             <input type="number" placeholder="Max Discount" value={formData.maxDiscount} onChange={(e) => setFormData({...formData, maxDiscount: e.target.value})} className={inputBaseClass} />
-//                             <input type="date" value={formData.startDate} onChange={(e) => setFormData({...formData, startDate: e.target.value})} className={inputBaseClass} />
-//                             <input type="date" value={formData.expiryDate} onChange={(e) => setFormData({...formData, expiryDate: e.target.value})} className={inputBaseClass} />
-//                         </div>
-//                     </div>
+  const deleteCoupon = async (id) => {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this campaign?"
+      )
+    ) {
+      return;
+    }
 
-//                     <button type="submit" className="w-full bg-[#C8A253] text-black px-6 py-4 rounded-xl font-bold hover:bg-white hover:scale-[1.01] hover:shadow-[0_0_30px_rgba(200,162,83,0.3)] transition-all duration-300 active:scale-[0.98] uppercase tracking-widest text-sm">
-//                         Publish Campaign
-//                     </button>
-//                 </form>
-//             </div>
+    try {
+      await axiosInstance.delete(`/coupons/${id}`);
+      fetchCoupons();
+    } catch (err) {
+      alert("Error deleting coupon");
+    }
+  };
 
-//             {/* --- ACTIVE CAMPAIGNS TABLE --- */}
-//             <div className="bg-[#0A0A0A] border border-[#1A1A1A] rounded-3xl shadow-xl overflow-hidden">
-//                 <table className="w-full text-left">
-//                     <thead className="bg-[#111111] text-gray-500 uppercase text-xs">
-//                         <tr>
-//                             <th className="p-6">Campaign</th>
-//                             <th className="p-6">Code</th>
-//                             <th className="p-6">Status</th>
-//                             <th className="p-6">Expiry</th>
-//                             <th className="p-6">Action</th>
-//                         </tr>
-//                     </thead>
-//                     <tbody className="divide-y divide-[#1A1A1A]">
-//                         {coupons.map(c => (
-//                             <tr 
-//                                 key={c._id} 
-//                                 className="group transition-all duration-300 hover:bg-[#151515] hover:border-l-4 hover:border-l-[#C8A253] cursor-default"
-//                             >
-//                                 <td className="p-6 font-bold text-gray-200 group-hover:pl-8 transition-all duration-300">{c.name}</td>
-//                                 <td className="p-6 font-mono text-[#C8A253]">{c.code}</td>
-//                                 <td className="p-6">
-//                                     <span className={`px-3 py-1 rounded-full text-xs ${c.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
-//                                         {c.status}
-//                                     </span>
-//                                 </td>
-//                                 <td className="p-6">
-//                                     <input type="date" value={formatDateForInput(c.expiryDate)} onChange={(e) => handleDateUpdate(c._id, e.target.value)} className="bg-transparent border border-transparent hover:border-[#333] rounded px-2 py-1 text-sm focus:border-[#C8A253] transition-all" />
-//                                 </td>
-//                                 <td className="p-6">
-//                                     <button onClick={() => deleteCoupon(c._id)} className="text-gray-500 hover:text-rose-500 hover:scale-110 transition-all">
-//                                         <Trash2 size={18} />
-//                                     </button>
-//                                 </td>
-//                             </tr>
-//                         ))}
-//                     </tbody>
-//                 </table>
-//             </div>
-//         </div>
-//     );
-// }
+  return (
+    <div className="space-y-7 text-slate-900">
+      <header>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#A67D2D]">
+          Offers & campaigns
+        </p>
 
-// import React, { useState, useEffect } from 'react';
-// import axiosInstance from '../../utils/axiosInstance';
-// import { Trash2, PlusCircle, Loader2, Tag, Settings, Users, MonitorPlay } from 'lucide-react';
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+          Coupon Management
+        </h1>
 
-// export default function CouponManager() {
-//     const [coupons, setCoupons] = useState([]);
-//     const [loading, setLoading] = useState(false);
-    
-//     // ... (States aur Functions wahi purane wale hi rahenge) ...
-//     const [formData, setFormData] = useState({ 
-//         campaignType: 'Festival', name: '', code: '', description: '', 
-//         discountType: 'flat', discountValue: '', maxDiscount: '', 
-//         startDate: '', expiryDate: '', status: 'Active',
-//         minOrderValue: '', maxOrderValue: '', 
-//         applicableFor: 'All Users', isFirstOrderOnly: false,
-//         applicableBrand: 'All', applicableCategory: 'All',
-//         usageLimit: '', perUserLimit: 1, 
-//         showOn: [], 
-//         isReward: false, rewardCondition: '', rewardCode: '',
-//         autoApply: false
-//     });
+        <p className="mt-2 text-sm leading-6 text-slate-500">
+          Create offers and manage coupon validity and placements.
+        </p>
+      </header>
 
-//     useEffect(() => { fetchCoupons(); }, []);
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex items-center gap-3 border-b border-slate-100 px-5 py-5 sm:px-6">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#FAF5E9] text-[#A67D2D]">
+            <PlusCircle size={23} />
+          </span>
 
-//     const fetchCoupons = async () => {
-//         setLoading(true);
-//         try {
-//             const { data } = await axiosInstance.get('/coupons/all');
-//             setCoupons(data.coupons || []);
-//         } catch (err) { console.error("Error fetching coupons", err); } 
-//         finally { setLoading(false); }
-//     };
+          <div>
+            <h2 className="text-lg font-semibold">
+              Create New Campaign
+            </h2>
+            <p className="mt-1 text-xs text-slate-500">
+              Configure the offer and choose where it appears.
+            </p>
+          </div>
+        </div>
 
-//     const updateCouponStatus = async (id, newStatus) => {
-//         try {
-//             await axiosInstance.put(`/coupons/update/${id}`, { status: newStatus });
-//             fetchCoupons();
-//         } catch (err) { alert("Error updating status"); }
-//     };
+        <form
+          onSubmit={createCoupon}
+          className="space-y-8 p-5 sm:p-6"
+        >
+          <FormSection title="1. Campaign Information" icon={Tag}>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <Field label="Campaign type">
+                <select
+                  value={formData.campaignType}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      campaignType: e.target.value,
+                    })
+                  }
+                  className={inputClass}
+                >
+                  <option value="Festival">Festival Offer</option>
+                  <option value="Brand Offer">Brand Offer</option>
+                  <option value="Welcome Offer">Welcome Offer</option>
+                  <option value="Checkout Offer">Checkout Offer</option>
+                </select>
+              </Field>
 
-//     const handleDateUpdate = async (id, newDate) => {
-//         try {
-//             await axiosInstance.put(`/coupons/update-date/${id}`, { newExpiryDate: newDate });
-//             fetchCoupons();
-//         } catch (err) {
-//             alert("Error updating expiry date");
-//             console.error(err);
-//         }
-//     };
+              <Field label="Coupon name">
+                <input
+                  type="text"
+                  placeholder="e.g. Diwali Sale"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      name: e.target.value,
+                    })
+                  }
+                  className={inputClass}
+                  required
+                />
+              </Field>
 
-//     const formatDateForInput = (isoDate) => {
-//         if (!isoDate) return '';
-//         return new Date(isoDate).toISOString().split('T')[0];
-//     };
+              <Field label="Coupon code">
+                <input
+                  type="text"
+                  placeholder="e.g. DIWALI500"
+                  value={formData.code}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      code: e.target.value.toUpperCase(),
+                    })
+                  }
+                  className={`${inputClass} font-semibold uppercase tracking-wider`}
+                  required
+                />
+              </Field>
 
-//     const handleCheckboxChange = (e, field) => {
-//         setFormData({ ...formData, [field]: e.target.checked });
-//     };
+              <Field label="Status">
+                <select
+                  value={formData.status}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      status: e.target.value,
+                    })
+                  }
+                  className={inputClass}
+                >
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </Field>
+            </div>
 
-//     const handleShowOnChange = (e) => {
-//         const value = e.target.value;
-//         setFormData(prev => ({
-//             ...prev,
-//             showOn: prev.showOn.includes(value) 
-//                 ? prev.showOn.filter(item => item !== value) 
-//                 : [...prev.showOn, value]
-//         }));
-//     };
+            <Field label="Description">
+              <input
+                type="text"
+                placeholder="e.g. Get ₹500 OFF on your first purchase"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    description: e.target.value,
+                  })
+                }
+                className={inputClass}
+              />
+            </Field>
+          </FormSection>
 
-//     const createCoupon = async (e) => {
-//         e.preventDefault();
-//         try {
-//             await axiosInstance.post('/coupons/create', formData);
-//             alert("Coupon Created Successfully!");
-//             setFormData({ 
-//                 campaignType: 'Festival', name: '', code: '', description: '', 
-//                 discountType: 'flat', discountValue: '', maxDiscount: '', 
-//                 startDate: '', expiryDate: '', status: 'Active', 
-//                 minOrderValue: '', maxOrderValue: '', 
-//                 applicableFor: 'All Users', isFirstOrderOnly: false, 
-//                 applicableBrand: 'All', applicableCategory: 'All',
-//                 usageLimit: '', perUserLimit: 1, showOn: [], 
-//                 isReward: false, rewardCondition: '', rewardCode: '', autoApply: false
-//             });
-//             fetchCoupons();
-//         } catch (err) { alert(err.response?.data?.message || "Error creating coupon"); }
-//     };
+          <div className="border-t border-slate-100" />
 
-//     const deleteCoupon = async (id) => {
-//         if (!window.confirm("Are you sure you want to delete this campaign?")) return;
-//         try {
-//             await axiosInstance.delete(`/coupons/${id}`);
-//             fetchCoupons();
-//         } catch (err) { alert("Error deleting coupon"); }
-//     };
+          <FormSection
+            title="2. Discount Rules & Validity"
+            icon={Settings}
+          >
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+              <Field label="Discount type">
+                <select
+                  value={formData.discountType}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      discountType: e.target.value,
+                    })
+                  }
+                  className={inputClass}
+                >
+                  <option value="flat">Flat Discount (₹)</option>
+                  <option value="percentage">Percentage (%)</option>
+                  <option value="free_shipping">Free Shipping</option>
+                </select>
+              </Field>
 
-//     // Premium Input Style (Updated to Light Theme)
-//     const inputBaseClass = "w-full bg-white border border-gray-200 rounded-xl p-3.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#C8A253] focus:ring-2 focus:ring-[#C8A253]/20 transition-all duration-300 hover:border-gray-300";
+              <Field label="Discount value">
+                <input
+                  type="number"
+                  placeholder="Enter discount value"
+                  value={formData.discountValue}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      discountValue: e.target.value,
+                    })
+                  }
+                  className={inputClass}
+                  required={formData.discountType !== "free_shipping"}
+                  disabled={formData.discountType === "free_shipping"}
+                />
+              </Field>
 
-//     return (
-//         <div className="p-4 md:p-8 bg-gray-50 min-h-screen text-gray-800 font-sans selection:bg-[#C8A253]/30">
-//             <h1 className="text-3xl font-serif font-bold mb-8 text-gray-900 flex items-center gap-3">
-//                 <Tag size={32} className="text-[#C8A253]" /> Premium Campaign Management
-//             </h1>
+              <Field label="Maximum discount (₹)">
+                <input
+                  type="number"
+                  placeholder="Only for percentage discounts"
+                  value={formData.maxDiscount}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      maxDiscount: e.target.value,
+                    })
+                  }
+                  className={inputClass}
+                  disabled={formData.discountType !== "percentage"}
+                  title="Only for Percentage"
+                />
+              </Field>
 
-//             {/* --- ADD NEW COUPON FORM --- */}
-//             <div className="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 mb-10 shadow-sm transition-all duration-300">
-//                 <h2 className="text-xl font-bold mb-8 text-gray-900 flex items-center gap-3">
-//                     <PlusCircle size={22} className="text-[#C8A253]" /> Create New Campaign
-//                 </h2>
-                
-//                 <form onSubmit={createCoupon} className="space-y-8">
-//                     {/* Section 1: Campaign Info */}
-//                     <div className="group bg-gray-50 p-6 rounded-2xl border border-gray-100 hover:border-gray-200 transition-all duration-300">
-//                         <h3 className="text-sm font-bold text-[#C8A253] tracking-widest uppercase mb-4">Campaign Information</h3>
-//                         <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
-//                             <select value={formData.campaignType} onChange={(e) => setFormData({...formData, campaignType: e.target.value})} className={inputBaseClass}>
-//                                 <option value="Festival">🎉 Festival Offer</option>
-//                                 <option value="Brand Offer">🏷️ Brand Offer</option>
-//                                 <option value="Welcome Offer">👋 Welcome Offer</option>
-//                             </select>
-//                             <input type="text" placeholder="Coupon Name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className={inputBaseClass} />
-//                             <input type="text" placeholder="CODE" value={formData.code} onChange={(e) => setFormData({...formData, code: e.target.value.toUpperCase()})} className={`${inputBaseClass} font-bold text-[#C8A253]`} />
-//                             <select value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})} className={inputBaseClass}>
-//                                 <option value="Active">🟢 Active</option>
-//                                 <option value="Inactive">🔴 Inactive</option>
-//                             </select>
-//                         </div>
-//                     </div>
+              <Field label="Start date">
+                <input
+                  type="date"
+                  value={formData.startDate}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      startDate: e.target.value,
+                    })
+                  }
+                  className={inputClass}
+                  required
+                />
+              </Field>
 
-//                     {/* Section 2: Discount */}
-//                     <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 hover:border-gray-200 transition-all duration-300">
-//                         <h3 className="text-sm font-bold text-[#C8A253] tracking-widest uppercase mb-4">Discount Rules</h3>
-//                         <div className="grid grid-cols-1 md:grid-cols-5 gap-5">
-//                             <select value={formData.discountType} onChange={(e) => setFormData({...formData, discountType: e.target.value})} className={inputBaseClass}>
-//                                 <option value="flat">Flat Discount</option>
-//                                 <option value="percentage">Percentage</option>
-//                             </select>
-//                             <input type="number" placeholder="Value" value={formData.discountValue} onChange={(e) => setFormData({...formData, discountValue: e.target.value})} className={inputBaseClass} />
-//                             <input type="number" placeholder="Max Discount" value={formData.maxDiscount} onChange={(e) => setFormData({...formData, maxDiscount: e.target.value})} className={inputBaseClass} />
-//                             <input type="date" value={formData.startDate} onChange={(e) => setFormData({...formData, startDate: e.target.value})} className={inputBaseClass} />
-//                             <input type="date" value={formData.expiryDate} onChange={(e) => setFormData({...formData, expiryDate: e.target.value})} className={inputBaseClass} />
-//                         </div>
-//                     </div>
+              <Field label="Expiry date">
+                <input
+                  type="date"
+                  value={formData.expiryDate}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      expiryDate: e.target.value,
+                    })
+                  }
+                  className={inputClass}
+                  required
+                />
+              </Field>
+            </div>
+          </FormSection>
 
-//                     <button type="submit" className="w-full bg-gray-900 text-white px-6 py-4 rounded-xl font-bold hover:bg-gray-800 hover:scale-[1.01] hover:shadow-lg transition-all duration-300 active:scale-[0.98] uppercase tracking-widest text-sm flex items-center justify-center gap-2">
-//                         Publish Campaign
-//                     </button>
-//                 </form>
-//             </div>
+          <div className="border-t border-slate-100" />
 
-//             {/* --- ACTIVE CAMPAIGNS TABLE --- */}
-//             <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
-//                 <table className="w-full text-left">
-//                     <thead className="bg-gray-50 border-b border-gray-200 text-gray-500 uppercase text-xs">
-//                         <tr>
-//                             <th className="p-6">Campaign</th>
-//                             <th className="p-6">Code</th>
-//                             <th className="p-6">Status</th>
-//                             <th className="p-6">Expiry</th>
-//                             <th className="p-6">Action</th>
-//                         </tr>
-//                     </thead>
-//                     <tbody className="divide-y divide-gray-100">
-//                         {coupons.map(c => (
-//                             <tr 
-//                                 key={c._id} 
-//                                 className="group transition-all duration-300 hover:bg-gray-50 hover:border-l-4 hover:border-l-[#C8A253] cursor-default"
-//                             >
-//                                 <td className="p-6 font-bold text-gray-900 group-hover:pl-8 transition-all duration-300">{c.name}</td>
-//                                 <td className="p-6 font-mono font-semibold text-[#C8A253]">{c.code}</td>
-//                                 <td className="p-6">
-//                                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${c.status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-500'}`}>
-//                                         {c.status}
-//                                     </span>
-//                                 </td>
-//                                 <td className="p-6">
-//                                     <input type="date" value={formatDateForInput(c.expiryDate)} onChange={(e) => handleDateUpdate(c._id, e.target.value)} className="bg-transparent border border-transparent hover:border-gray-300 rounded px-2 py-1 text-sm text-gray-700 focus:border-[#C8A253] focus:outline-none transition-all" />
-//                                 </td>
-//                                 <td className="p-6">
-//                                     <button onClick={() => deleteCoupon(c._id)} className="text-gray-400 hover:text-red-500 hover:scale-110 transition-all">
-//                                         <Trash2 size={18} />
-//                                     </button>
-//                                 </td>
-//                             </tr>
-//                         ))}
-//                     </tbody>
-//                 </table>
-//             </div>
-//         </div>
-//     );
-// }
+          <FormSection title="3. Targeting & Limits" icon={Users}>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <Field label="Minimum order amount (₹)">
+                <input
+                  type="number"
+                  placeholder="Minimum order amount"
+                  value={formData.minOrderValue}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      minOrderValue: e.target.value,
+                    })
+                  }
+                  className={inputClass}
+                />
+              </Field>
+
+              <Field label="Total usage limit">
+                <input
+                  type="number"
+                  placeholder="e.g. 500"
+                  value={formData.usageLimit}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      usageLimit: e.target.value,
+                    })
+                  }
+                  className={inputClass}
+                />
+              </Field>
+
+              <Field label="Applicable users">
+                <select
+                  value={formData.applicableFor}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      applicableFor: e.target.value,
+                    })
+                  }
+                  className={inputClass}
+                >
+                  <option value="All Users">All Users</option>
+                  <option value="New Users">New Users Only</option>
+                  <option value="Premium Users">Premium Users Only</option>
+                </select>
+              </Field>
+
+              <Field label="Applicable brand">
+                <select
+                  value={formData.applicableBrand}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      applicableBrand: e.target.value,
+                    })
+                  }
+                  className={inputClass}
+                >
+                  <option value="All">All Brands</option>
+                  <option value="Marshall">Marshall</option>
+                  <option value="Sony">Sony</option>
+                  <option value="Bose">Bose</option>
+                </select>
+              </Field>
+            </div>
+          </FormSection>
+
+          <div className="border-t border-slate-100" />
+
+          <FormSection title="4. Display Settings" icon={MonitorPlay}>
+            <div className="flex flex-wrap gap-5 rounded-2xl border border-[#EDE3CF] bg-[#FCFAF5] p-4">
+              <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={formData.isFirstOrderOnly}
+                  onChange={(e) =>
+                    handleCheckboxChange(e, "isFirstOrderOnly")
+                  }
+                  className="h-4 w-4 accent-[#A67D2D]"
+                />
+                First Order Only
+              </label>
+
+              <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={formData.autoApply}
+                  onChange={(e) =>
+                    handleCheckboxChange(e, "autoApply")
+                  }
+                  className="h-4 w-4 accent-[#A67D2D]"
+                />
+                Auto Apply Coupon
+              </label>
+
+              <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium text-[#967025]">
+                <input
+                  type="checkbox"
+                  checked={formData.isReward}
+                  onChange={(e) =>
+                    handleCheckboxChange(e, "isReward")
+                  }
+                  className="h-4 w-4 accent-[#A67D2D]"
+                />
+                Set as Reward Coupon
+              </label>
+            </div>
+
+            <fieldset className="rounded-2xl border border-slate-200 p-4">
+              <legend className="px-2 text-sm font-medium text-slate-700">
+                Coupon visibility
+              </legend>
+
+              <p className="mb-4 text-xs text-slate-500">
+                Choose one or more placements.
+              </p>
+
+              <div className="flex flex-wrap gap-3">
+                {[
+                  "Home Banner",
+                  "Product Page",
+                  "Checkout Page",
+                  "Payment Success",
+                  "My Coupons",
+                ].map((place) => (
+                  <label
+                    key={place}
+                    className={`flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2.5 text-xs font-medium transition ${
+                      formData.showOn.includes(place)
+                        ? "border-[#DEC99E] bg-[#FAF5E9] text-[#8C6927]"
+                        : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      value={place}
+                      checked={formData.showOn.includes(place)}
+                      onChange={handleShowOnChange}
+                      className="h-4 w-4 accent-[#A67D2D]"
+                    />
+                    {place}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          </FormSection>
+
+          <div className="flex justify-end border-t border-slate-100 pt-6">
+            <button
+              type="submit"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#C8A253] px-6 py-3.5 text-sm font-semibold text-slate-950 transition hover:bg-[#B89140] sm:w-auto"
+            >
+              <PlusCircle size={18} />
+              Publish Campaign
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
+          <h2 className="text-lg font-semibold text-slate-900">
+            Campaigns & Database
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Manage campaign status, expiry dates and placements.
+          </p>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full whitespace-nowrap text-left text-sm">
+            <thead className="border-b border-slate-200 bg-slate-50">
+              <tr>
+                {[
+                  "Campaign",
+                  "Code",
+                  "Discount",
+                  "Status",
+                  "Placements",
+                  "Used",
+                  "Expiry",
+                  "Action",
+                ].map((heading) => (
+                  <th
+                    key={heading}
+                    scope="col"
+                    className="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500"
+                  >
+                    {heading}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-slate-100">
+              {loading ? (
+                <tr>
+                  <td colSpan="8" className="p-12 text-center">
+                    <Loader2
+                      className="mx-auto animate-spin text-[#A67D2D]"
+                      size={28}
+                      aria-label="Loading campaigns"
+                    />
+                  </td>
+                </tr>
+              ) : coupons.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan="8"
+                    className="p-12 text-center text-sm text-slate-500"
+                  >
+                    No campaigns found.
+                  </td>
+                </tr>
+              ) : (
+                coupons.map((c) => (
+                  <tr
+                    key={c._id}
+                    className="transition hover:bg-slate-50/70"
+                  >
+                    <td className="px-5 py-4 font-semibold text-slate-800">
+                      {c.name}
+                    </td>
+
+                    <td className="px-5 py-4">
+                      <span className="rounded-lg border border-[#EADFC7] bg-[#FCFAF5] px-2.5 py-1.5 font-mono text-xs font-semibold tracking-wider text-[#967025]">
+                        {c.code}
+                      </span>
+                    </td>
+
+                    <td className="px-5 py-4 text-xs font-semibold text-slate-700">
+                      {c.discountType === "percentage"
+                        ? `${c.discountValue}%`
+                        : `₹${c.discountValue}`}
+                    </td>
+
+                    <td className="px-5 py-4">
+                      <select
+                        value={c.status}
+                        onChange={(e) =>
+                          updateCouponStatus(c._id, e.target.value)
+                        }
+                        aria-label={`Status for ${c.code}`}
+                        className={`cursor-pointer rounded-lg border px-2.5 py-2 text-xs font-semibold outline-none focus:ring-2 focus:ring-[#C8A253]/30 ${
+                          c.status === "Active"
+                            ? "border-emerald-100 bg-emerald-50 text-emerald-700"
+                            : "border-red-100 bg-red-50 text-red-700"
+                        }`}
+                      >
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                      </select>
+                    </td>
+
+                    <td className="px-5 py-4 text-xs text-slate-500">
+                      {c.showOn?.join(", ") || "Hidden"}
+                    </td>
+
+                    <td className="px-5 py-4 text-slate-600">
+                      {c.usedCount || 0}
+                    </td>
+
+                    <td className="px-5 py-4">
+                      <input
+                        type="date"
+                        value={formatDateForInput(c.expiryDate)}
+                        onChange={(e) =>
+                          handleDateUpdate(c._id, e.target.value)
+                        }
+                        aria-label={`Expiry date for ${c.code}`}
+                        className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 outline-none focus:border-[#C8A253] focus:ring-2 focus:ring-[#C8A253]/10"
+                      />
+                    </td>
+
+                    <td className="px-5 py-4">
+                      <button
+                        type="button"
+                        onClick={() => deleteCoupon(c._id)}
+                        aria-label={`Delete campaign ${c.name}`}
+                        className="rounded-lg border border-red-100 p-2 text-red-500 transition hover:bg-red-50 hover:text-red-700"
+                      >
+                        <Trash2 size={17} />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  );
+}
