@@ -1,8 +1,34 @@
 
+
 // import React, { useState, useEffect } from 'react';
 // import axiosInstance from '../../utils/axiosInstance';
 // import Toast from '../../components/Toast';
-// import { Plus, Trash2, ImagePlus, Grid3X3, List, Search, Package, Edit2, X, ChevronDown, Tag, Boxes, IndianRupee, Star, Zap, Clock, Video, ListChecks, CheckSquare, ChevronLeft, ChevronRight, LayoutTemplate } from 'lucide-react';
+// import * as XLSX from 'xlsx';
+// import {
+//   Plus,
+//   Trash2,
+//   ImagePlus,
+//   Grid3X3,
+//   List,
+//   Search,
+//   Package,
+//   Edit2,
+//   X,
+//   ChevronDown,
+//   Tag,
+//   Boxes,
+//   IndianRupee,
+//   Star,
+//   Zap,
+//   Clock,
+//   Video,
+//   ListChecks,
+//   CheckSquare,
+//   ChevronLeft,
+//   ChevronRight,
+//   LayoutTemplate,
+//   Download
+// } from 'lucide-react';
 
 // export default function AdminProducts() {
 //   const [products, setProducts] = useState([]);
@@ -120,6 +146,67 @@
 
 //   const categories = [...new Set(products.map(p => p.category))];
 
+//  const handleExportExcel = () => {
+//     const list = filteredProducts.length ? filteredProducts : products;
+//     if (!list.length) return;
+
+//     const rows = list.map((p, i) => {
+//       const remarks = [];
+
+//       const productImgCount = Array.isArray(p.images) ? p.images.length : 0;
+//       const variantList = Array.isArray(p.variants) ? p.variants : [];
+//       const variantImgCount = variantList.reduce(
+//         (sum, v) => sum + (Array.isArray(v?.images) ? v.images.length : 0),
+//         0
+//       );
+//       const totalImages = productImgCount + variantImgCount;
+
+//       if (!p.promotionalVideo?.videoUrl?.trim()) {
+//         remarks.push('No Video');
+//       }
+
+//       if (totalImages === 0) {
+//         remarks.push('No Images');
+//       } else if (totalImages < 2) {
+//         remarks.push(`Low Images (${totalImages})`);
+//       }
+
+//       if (
+//         p.price === undefined ||
+//         p.price === null ||
+//         p.price === '' ||
+//         Number(p.price) <= 0
+//       ) {
+//         remarks.push('No Price');
+//       }
+
+//       if (!variantList.length) {
+//         remarks.push('No Variants');
+//       } else if (variantList.some(v => !v?.color?.trim())) {
+//         remarks.push('Missing Color');
+//       }
+
+//       return {
+//         'S.No': i + 1,
+//         'Name': p.name || '',
+//         'Brand': p.brand || '',
+//         'Category': p.category || '',
+//         'Price': p.price ?? '',
+//         'Discount Price': p.discountPrice ?? '',
+//         'Stock': p.stock || '',
+//         'Active': p.isActive ? 'Yes' : 'No',
+//         'Images Count': totalImages,
+//         'Video': p.promotionalVideo?.videoUrl ? 'Yes' : 'No',
+//         'Remarks': remarks.length ? remarks.join(' | ') : 'Complete',
+//         'Description': String(p.description || '').replace(/<[^>]*>/g, ' ').trim(),
+//       };
+//     });
+
+//     const ws = XLSX.utils.json_to_sheet(rows);
+//     const wb = XLSX.utils.book_new();
+//     XLSX.utils.book_append_sheet(wb, ws, 'Products');
+//     XLSX.writeFile(wb, 'products.xlsx');
+//   };
 //   const fetchProducts = async () => {
 //     try {
 //       const { data } = await axiosInstance.get('/products/admin/products');
@@ -663,6 +750,15 @@
 
 //             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
 //           </div>
+
+//           <button
+//             type="button"
+//             onClick={handleExportExcel}
+//             title="Export to Excel"
+//             className="p-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-700 hover:border-[#C8A253] hover:text-[#C8A253] transition-colors"
+//           >
+//             <Download className="w-4 h-4" />
+//           </button>
 
 //           <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg p-1">
 //             <button
@@ -1610,14 +1706,14 @@
 //                           key={idx}
 //                           className="p-4 bg-white rounded-xl border border-gray-200 shadow-sm"
 //                         >
-//                           <div className="flex items-center justify-between mb-3">
+//                          <div className="flex items-center justify-between mb-3">
 //                             <div className="flex items-center gap-2">
 //                               <span className="w-6 h-6 rounded-full bg-[#C8A253]/10 text-[#C8A253] text-xs flex items-center justify-center font-bold">
 //                                 {idx + 1}
 //                               </span>
 //                               <span className="text-sm font-medium text-gray-900">
-//                                 {variant.color || variant.size
-//                                   ? `${variant.color} ${variant.size}`.trim()
+//                                 {variant.color
+//                                   ? variant.color.trim()
 //                                   : `Variant ${idx + 1}`}
 //                               </span>
 //                             </div>
@@ -1631,7 +1727,7 @@
 //                             </button>
 //                           </div>
 
-//                           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+//                           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
 //                             <div>
 //                               <label className="block text-xs font-medium text-gray-600 mb-1">
 //                                 Color
@@ -1646,24 +1742,6 @@
 //                                   )
 //                                 }
 //                                 placeholder="e.g. Red"
-//                                 className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-[#C8A253] focus:ring-1 focus:ring-[#C8A253]"
-//                               />
-//                             </div>
-
-//                             <div>
-//                               <label className="block text-xs font-medium text-gray-600 mb-1">
-//                                 Size
-//                               </label>
-//                               <input
-//                                 value={variant.size}
-//                                 onChange={(e) =>
-//                                   handleVariantChange(
-//                                     idx,
-//                                     'size',
-//                                     e.target.value
-//                                   )
-//                                 }
-//                                 placeholder="e.g. M, L"
 //                                 className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-[#C8A253] focus:ring-1 focus:ring-[#C8A253]"
 //                               />
 //                             </div>
@@ -1823,6 +1901,7 @@
 //   );
 // }
 
+
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../utils/axiosInstance';
 import Toast from '../../components/Toast';
@@ -1853,8 +1932,39 @@ import {
   Download
 } from 'lucide-react';
 
+const uniqueOptionNames = (values) => {
+  const names = new Map();
+  for (const value of values) {
+    if (typeof value !== 'string' || !value.trim()) continue;
+    const name = value.trim();
+    const key = name.toLocaleLowerCase();
+    if (!names.has(key)) names.set(key, name);
+  }
+  return [...names.values()];
+};
+
+const HEADER_MENU_GROUPS = [
+  'SPEAKERS',
+  'HEADPHONES',
+  'EARPHONES',
+  'SMARTWATCHES',
+  'BEAUTY & WELLNESS',
+  'HOME THEATER'
+];
+
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
+  const [categoryOptions, setCategoryOptions] = useState([]);
+  const [brandOptions, setBrandOptions] = useState([]);
+  const [categoryDetails, setCategoryDetails] = useState([]);
+  const [brandDetails, setBrandDetails] = useState([]);
+  const [archivedCategoryNames, setArchivedCategoryNames] = useState([]);
+  const [archivedBrandNames, setArchivedBrandNames] = useState([]);
+  const [newCategoryMenuGroup, setNewCategoryMenuGroup] = useState(HEADER_MENU_GROUPS[0]);
+  const [showOptionsModal, setShowOptionsModal] = useState(false);
+  const [newCategory, setNewCategory] = useState('');
+  const [newBrand, setNewBrand] = useState('');
+  const [savingOption, setSavingOption] = useState(false);
 
   const [bulkSpecsText, setBulkSpecsText] = useState('');
   const [bulkHighlightsText, setBulkHighlightsText] = useState('');
@@ -1967,7 +2077,23 @@ export default function AdminProducts() {
     return matchesSearch && matchesCategory;
   });
 
-  const categories = [...new Set(products.map(p => p.category))];
+  const categories = uniqueOptionNames(products.map(p => p.category));
+  const productFormCategories = uniqueOptionNames([
+    ...categoryOptions,
+    ...products.map(product => product.category),
+    ...(editMode && formData.category ? [formData.category] : [])
+  ]).filter(category =>
+    !archivedCategoryNames.includes(category.toLowerCase()) ||
+    (editMode && category.toLowerCase() === String(formData.category || '').toLowerCase())
+  );
+  const productFormBrands = uniqueOptionNames([
+    ...brandOptions,
+    ...products.map(product => product.brand),
+    ...(editMode && formData.brand ? [formData.brand] : [])
+  ]).filter(brand =>
+    !archivedBrandNames.includes(brand.toLowerCase()) ||
+    (editMode && brand.toLowerCase() === String(formData.brand || '').toLowerCase())
+  );
 
  const handleExportExcel = () => {
     const list = filteredProducts.length ? filteredProducts : products;
@@ -2033,7 +2159,8 @@ export default function AdminProducts() {
   const fetchProducts = async () => {
     try {
       const { data } = await axiosInstance.get('/products/admin/products');
-      setProducts(data.products);
+      const loadedProducts = Array.isArray(data.products) ? data.products : [];
+      setProducts(loadedProducts);
     } catch (error) {
       showToast(
         'error',
@@ -2044,8 +2171,103 @@ export default function AdminProducts() {
     }
   };
 
+  const fetchProductOptions = async () => {
+    try {
+      const { data } = await axiosInstance.get('/products/admin/options');
+      setCategoryOptions(uniqueOptionNames(Array.isArray(data.categories) ? data.categories : []));
+      setBrandOptions(uniqueOptionNames(Array.isArray(data.brands) ? data.brands : []));
+      setCategoryDetails(Array.isArray(data.categoryDetails) ? data.categoryDetails : []);
+      setBrandDetails(Array.isArray(data.brandDetails) ? data.brandDetails : []);
+      setArchivedCategoryNames(Array.isArray(data.archivedCategories) ? data.archivedCategories : []);
+      setArchivedBrandNames(Array.isArray(data.archivedBrands) ? data.archivedBrands : []);
+    } catch (error) {
+      showToast(
+        'error',
+        error.response?.data?.message || 'Failed to load categories and brands'
+      );
+    }
+  };
+
+  const handleAddProductOption = async (type) => {
+    const rawValue = type === 'category' ? newCategory : newBrand;
+    const value = rawValue.trim();
+
+    if (!value) {
+      showToast('error', `Enter a ${type} name first`);
+      return;
+    }
+
+    setSavingOption(true);
+    try {
+      const { data } = await axiosInstance.post('/products/admin/options', {
+        type,
+        value,
+        ...(type === 'category' ? { menuGroup: newCategoryMenuGroup } : {}),
+      });
+      const savedValue = data.option?.value || value;
+
+      if (type === 'category') {
+        setCategoryOptions(current => uniqueOptionNames([...current, savedValue]));
+        setCategoryDetails(current => [
+          ...current.filter(item => item.value.toLowerCase() !== savedValue.toLowerCase()),
+          {
+            id: data.option?.id,
+            value: savedValue,
+            menuGroup: data.option?.menuGroup || newCategoryMenuGroup,
+          },
+        ]);
+        setArchivedCategoryNames(current => current.filter(name => name !== savedValue.toLowerCase()));
+        setNewCategory('');
+      } else {
+        setBrandOptions(current => uniqueOptionNames([...current, savedValue]));
+        setBrandDetails(current => [
+          ...current.filter(item => item.value.toLowerCase() !== savedValue.toLowerCase()),
+          { id: data.option?.id, value: savedValue },
+        ]);
+        setArchivedBrandNames(current => current.filter(name => name !== savedValue.toLowerCase()));
+        setNewBrand('');
+      }
+
+      showToast(
+        'success',
+        data.alreadyExists ? `${type} already exists` : `${type} added successfully`
+      );
+    } catch (error) {
+      showToast(
+        'error',
+        error.response?.data?.message || `Failed to add ${type}`
+      );
+    } finally {
+      setSavingOption(false);
+    }
+  };
+
+  const handleRemoveProductOption = async (option) => {
+    if (!option?.id) return;
+    const type = option.menuGroup ? 'category' : 'brand';
+    const confirmed = window.confirm(
+      `Remove "${option.value}" from the active ${type} lists? Existing products will keep their saved data.`
+    );
+    if (!confirmed) return;
+
+    setSavingOption(true);
+    try {
+      await axiosInstance.delete(`/products/admin/options/${option.id}`);
+      await fetchProductOptions();
+      showToast('success', `${type} removed from the active lists`);
+    } catch (error) {
+      showToast(
+        'error',
+        error.response?.data?.message || `Failed to remove ${type}`
+      );
+    } finally {
+      setSavingOption(false);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
+    fetchProductOptions();
   }, []);
 
   const handleChange = (e) => {
@@ -2533,13 +2755,24 @@ export default function AdminProducts() {
           </p>
         </div>
 
-        <button
-          onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#C8A253] to-[#b08d44] text-white font-semibold hover:shadow-lg hover:shadow-[#C8A253]/20 transition-all duration-300"
-        >
-          <Plus className="w-5 h-5" />
-          Add New Product
-        </button>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <button
+            type="button"
+            onClick={() => setShowOptionsModal(true)}
+            className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-[#C8A253] text-[#9b762d] bg-white font-semibold hover:bg-[#C8A253]/5 transition-colors"
+          >
+            <Tag className="w-5 h-5" />
+            Manage Categories & Brands
+          </button>
+          <button
+            type="button"
+            onClick={() => handleOpenModal()}
+            className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#C8A253] to-[#b08d44] text-white font-semibold hover:shadow-lg hover:shadow-[#C8A253]/20 transition-all duration-300"
+          >
+            <Plus className="w-5 h-5" />
+            Add New Product
+          </button>
+        </div>
       </div>
 
       {/* Search & Filter Bar */}
@@ -2941,26 +3174,36 @@ export default function AdminProducts() {
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">
                         Category *
                       </label>
-                      <input
+                      <select
                         required
                         name="category"
                         value={formData.category}
                         onChange={handleChange}
                         className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:border-[#C8A253] focus:ring-1 focus:ring-[#C8A253]"
-                      />
+                      >
+                        <option value="">Select category</option>
+                        {productFormCategories.map(category => (
+                          <option key={category} value={category}>{category}</option>
+                        ))}
+                      </select>
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">
                         Brand *
                       </label>
-                      <input
+                      <select
                         required
                         name="brand"
                         value={formData.brand}
                         onChange={handleChange}
                         className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:border-[#C8A253] focus:ring-1 focus:ring-[#C8A253]"
-                      />
+                      >
+                        <option value="">Select brand</option>
+                        {productFormBrands.map(brand => (
+                          <option key={brand} value={brand}>{brand}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                 </div>
@@ -3720,6 +3963,140 @@ export default function AdminProducts() {
           </div>
         </div>
       )}
+
+      {/* CATEGORY AND BRAND MANAGEMENT */}
+      {showOptionsModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50">
+              <div>
+                <h2 className="text-xl font-semibold text-[#9b762d]">Manage Categories & Brands</h2>
+                <p className="text-sm text-gray-500 mt-1">Category choose karte waqt header menu select karo. Brands automatically Brands menu mein jayenge.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowOptionsModal(false)}
+                className="p-2 rounded-lg hover:bg-gray-200 text-gray-500"
+                aria-label="Close category and brand manager"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 p-6">
+              <section className="rounded-xl border border-gray-200 p-5">
+                <h3 className="font-semibold text-gray-800 mb-3">Categories</h3>
+                <form
+                  className="space-y-2"
+                  onSubmit={event => {
+                    event.preventDefault();
+                    handleAddProductOption('category');
+                  }}
+                >
+                  <input
+                    value={newCategory}
+                    onChange={event => setNewCategory(event.target.value)}
+                    maxLength={80}
+                    placeholder="Enter category name"
+                    className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2.5 focus:outline-none focus:border-[#C8A253]"
+                  />
+                  <select
+                    value={newCategoryMenuGroup}
+                    onChange={event => setNewCategoryMenuGroup(event.target.value)}
+                    aria-label="Choose the header menu for this category"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2.5 focus:outline-none focus:border-[#C8A253]"
+                  >
+                    {HEADER_MENU_GROUPS.map(group => (
+                      <option key={group} value={group}>{group}</option>
+                    ))}
+                  </select>
+                  <button
+                    type="submit"
+                    disabled={savingOption}
+                    className="rounded-lg bg-[#C8A253] px-4 py-2.5 font-semibold text-white disabled:opacity-60"
+                  >Add Category</button>
+                </form>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {categoryOptions.length ? categoryOptions.map(categoryName => {
+                    const category = categoryDetails.find(
+                      item => item.value.toLowerCase() === categoryName.toLowerCase()
+                    );
+
+                    return (
+                      <span key={categoryName} className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 text-sm text-gray-700">
+                        <span>
+                          {categoryName}
+                          {category?.menuGroup && (
+                            <span className="text-xs text-gray-500"> → {category.menuGroup}</span>
+                          )}
+                        </span>
+                        {category?.id && (
+                          <button
+                            type="button"
+                            disabled={savingOption}
+                            onClick={() => handleRemoveProductOption(category)}
+                            aria-label={`Remove category ${categoryName}`}
+                            title="Remove category"
+                            className="text-gray-500 hover:text-red-600 disabled:opacity-40"
+                          ><Trash2 size={14} /></button>
+                        )}
+                      </span>
+                    );
+                  }) : <span className="text-sm text-gray-500">No categories yet</span>}
+                </div>
+              </section>
+
+              <section className="rounded-xl border border-gray-200 p-5">
+                <h3 className="font-semibold text-gray-800 mb-3">Brands</h3>
+                <form
+                  className="flex gap-2"
+                  onSubmit={event => {
+                    event.preventDefault();
+                    handleAddProductOption('brand');
+                  }}
+                >
+                  <input
+                    value={newBrand}
+                    onChange={event => setNewBrand(event.target.value)}
+                    maxLength={80}
+                    placeholder="Enter brand name"
+                    className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2.5 focus:outline-none focus:border-[#C8A253]"
+                  />
+                  <button
+                    type="submit"
+                    disabled={savingOption}
+                    className="rounded-lg bg-[#C8A253] px-4 py-2.5 font-semibold text-white disabled:opacity-60"
+                  >Add</button>
+                </form>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {brandOptions.length ? brandOptions.map(brandName => {
+                    const brand = brandDetails.find(
+                      item => item.value.toLowerCase() === brandName.toLowerCase()
+                    );
+
+                    return (
+                      <span key={brandName} className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 text-sm text-gray-700">
+                        <span>{brandName}</span>
+                        {brand?.id && (
+                          <button
+                            type="button"
+                            disabled={savingOption}
+                            onClick={() => handleRemoveProductOption(brand)}
+                            aria-label={`Remove brand ${brandName}`}
+                            title="Remove brand"
+                            className="text-gray-500 hover:text-red-600 disabled:opacity-40"
+                          ><Trash2 size={14} /></button>
+                        )}
+                      </span>
+                    );
+                  }) : <span className="text-sm text-gray-500">No brands yet</span>}
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
